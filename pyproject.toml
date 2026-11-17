@@ -1,0 +1,60 @@
+[project]
+name = "mini-cdss"
+version = "0.1.0"
+description = "RAG healthcare assistant — ICD-10 lookup & drug interaction checking"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.0",
+    "chromadb>=1.0",
+    "sentence-transformers>=6.0",
+    "groq>=1.0",
+    "anthropic>=1.0",
+    "google-genai>=2.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "fastapi>=0.140",
+    "uvicorn[standard]>=0.50",
+    "rank-bm25>=0.2",
+    "python-multipart>=0.0.9",
+    "sse-starlette>=2.0",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0",
+    "ruff>=0.16",
+    "mypy>=2.0",
+]
+
+# --- Ruff: linting + formatting dalam 1 tool, cepat, jadi standar de-facto ---
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes (unused imports, undefined names, dll)
+    "I",   # isort (urutan import otomatis)
+    "UP",  # pyupgrade (saran syntax Python modern)
+    "B",   # bugbear (pola kode yang sering jadi sumber bug)
+]
+ignore = [
+    "E501",  # panjang baris ditangani formatter, bukan linter
+]
+
+# --- mypy: type checking statis ---
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_ignores = true
+# Library eksternal (chromadb, sentence-transformers, dll) sering belum
+# punya type stub lengkap -- kita longgarkan utk itu, tapi tetap strict
+# untuk kode kita sendiri.
+ignore_missing_imports = true
+
+# --- pytest ---
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

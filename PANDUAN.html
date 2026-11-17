@@ -1,0 +1,3096 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Belajar Mini-CDSS dari Nol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f3f4ef;
+        --ink: #1a1e1b;
+        --muted: #5b615c;
+        --accent: #0f6d66;
+        --accent-soft: #dceae8;
+        --progress: #2a5c8a;
+        --progress-soft: #dce7f1;
+        --checkpoint: #6b4c8a;
+        --checkpoint-soft: #eae1f0;
+        --warn: #9a5b13;
+        --warn-soft: #f3e6d4;
+        --border: #d9d6cb;
+        --code-bg: #13191a;
+        --code-ink: #e7ecea;
+        --white: #fcfcfa;
+        --new: #1a6b35;
+        --new-soft: #d8eee0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", sans-serif;
+        font-size: 16px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Source Serif 4", serif;
+        font-weight: 700;
+        line-height: 1.25;
+        color: var(--ink);
+      }
+      a {
+        color: var(--accent);
+      }
+
+      header.hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 24px 40px;
+        border-bottom: 2px solid var(--ink);
+      }
+      .kicker {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 13px;
+        color: var(--accent);
+        margin: 0 0 14px;
+        letter-spacing: 0.02em;
+      }
+      header.hero h1 {
+        font-size: 32px;
+        margin: 0 0 14px;
+        max-width: 18ch;
+      }
+      header.hero p.lede {
+        font-size: 17px;
+        color: var(--muted);
+        max-width: 58ch;
+        margin: 0 0 20px;
+      }
+      .promise {
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 16px 18px;
+        font-size: 14.5px;
+        margin: 0 0 24px;
+      }
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 28px;
+        font-size: 13.5px;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        border-top: 1px solid var(--border);
+        padding-top: 16px;
+      }
+      .meta-row strong {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      nav.toc {
+        max-width: 780px;
+        margin: 40px auto 0;
+        padding: 0 24px;
+      }
+      nav.toc ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border: 1px solid var(--border);
+        background: var(--white);
+        counter-reset: modul;
+      }
+      nav.toc li {
+        border-bottom: 1px solid var(--border);
+      }
+      nav.toc li:last-child {
+        border-bottom: none;
+      }
+      nav.toc a {
+        display: flex;
+        gap: 14px;
+        align-items: baseline;
+        padding: 13px 18px;
+        text-decoration: none;
+        color: var(--ink);
+        font-size: 15px;
+      }
+      nav.toc a:hover {
+        background: var(--accent-soft);
+      }
+      nav.toc .num {
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--accent);
+        font-size: 13px;
+        min-width: 78px;
+      }
+      nav.toc .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      nav.toc .badge-new {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        background: var(--new);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin-left: 6px;
+        vertical-align: middle;
+        letter-spacing: 0.03em;
+      }
+
+      section {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 56px 24px 0;
+      }
+      section h2 {
+        font-size: 23px;
+        margin: 0 0 4px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid var(--ink);
+      }
+      section .section-sub {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0 0 28px;
+        font-style: italic;
+      }
+      h3 {
+        font-size: 17px;
+        margin: 30px 0 10px;
+      }
+      p {
+        margin: 0 0 16px;
+      }
+      ul,
+      ol {
+        margin: 0 0 16px;
+        padding-left: 22px;
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      strong {
+        font-weight: 600;
+      }
+      code {
+        font-family: "IBM Plex Mono", monospace;
+        background: var(--accent-soft);
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 0.9em;
+      }
+      pre {
+        background: var(--code-bg);
+        color: var(--code-ink);
+        padding: 16px 18px;
+        overflow-x: auto;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.6;
+        margin: 0 0 20px;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: inherit;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 0 24px;
+        font-size: 14.5px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: var(--white);
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      tr:nth-child(even) td {
+        background: var(--white);
+      }
+
+      /* Blok pedagogis */
+      .block {
+        padding: 16px 18px;
+        margin: 0 0 20px;
+        font-size: 14.5px;
+      }
+      .block .label {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .block p:last-child {
+        margin-bottom: 0;
+      }
+      .konsep {
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+      }
+      .konsep .label {
+        color: var(--accent);
+      }
+      .praktik {
+        border: 1px solid var(--border);
+        background: var(--white);
+      }
+      .praktik .label {
+        color: var(--progress);
+      }
+      .checkpoint {
+        border: 1px dashed var(--checkpoint);
+        background: var(--checkpoint-soft);
+      }
+      .checkpoint .label {
+        color: var(--checkpoint);
+      }
+      .perhatian {
+        border-left: 3px solid var(--warn);
+        background: var(--warn-soft);
+      }
+      .perhatian .label {
+        color: var(--warn);
+      }
+      .bugcard {
+        border: 1px solid var(--border);
+        background: var(--white);
+        padding: 14px 16px;
+        margin: 0 0 14px;
+      }
+      .bugcard .bugnum {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10.5px;
+        text-transform: uppercase;
+        color: var(--warn);
+        letter-spacing: 0.04em;
+        margin: 0 0 5px;
+      }
+      .bugcard h4 {
+        font-family: "IBM Plex Sans", sans-serif;
+        font-weight: 600;
+        font-size: 14.5px;
+        margin: 0 0 6px;
+      }
+      .bugcard p {
+        font-size: 13.5px;
+        margin: 0 0 6px;
+      }
+      .bugcard p:last-child {
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .modul-head {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 4px;
+        flex-wrap: wrap;
+      }
+      .modul-num {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 13px;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 2px 9px;
+        border-radius: 20px;
+      }
+      .modul-num.new {
+        color: var(--new);
+        border-color: var(--new);
+      }
+
+      footer {
+        max-width: 780px;
+        margin: 60px auto 0;
+        padding: 24px 24px 40px;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      @media (max-width: 600px) {
+        header.hero h1 {
+          font-size: 26px;
+        }
+        section {
+          padding: 44px 18px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <p class="kicker">KURIKULUM · BELAJAR DARI NOL</p>
+      <h1>
+        Belajar Mini-CDSS: RAG Assistant untuk ICD-10 &amp; Interaksi Obat
+      </h1>
+      <p class="lede">
+        Bukan sekadar dokumentasi kode yang sudah jadi — ini jalur belajar
+        bertahap. Tiap modul menjelaskan KONSEPNYA dulu sebelum kamu lihat kode,
+        lalu ada PRAKTIK nyata, lalu CHECKPOINT buat mastiin kamu beneran paham
+        sebelum lanjut.
+      </p>
+      <div class="promise">
+        <strong>Anggapan awal:</strong> kamu belum setup apapun di laptop untuk
+        proyek ini, dan belum tentu familiar dengan RAG, vector database, atau
+        praktik software engineering profesional (testing, linting, type
+        checking). Kita mulai dari situ. Kamu SUDAH bisa Python dasar (variabel,
+        fungsi, loop) — itu tidak akan dijelaskan ulang.
+      </div>
+      <div class="meta-row">
+        <span>Untuk: <strong>Hafizh Iman Wicaksono</strong></span>
+        <span
+          >Cara pakai: <strong>ikuti modul berurutan, jangan skip</strong></span
+        >
+        <span
+          >Diperbarui:
+          <strong
+            >Oktober 2026 — FastAPI, Next.js, dan filter ICD-10</strong
+          ></span
+        >
+      </div>
+    </header>
+
+    <!-- ============ PENGETAHUAN UMUM ============ -->
+    <section id="pengetahuan-umum" style="padding-top: 40px">
+      <div class="modul-head">
+        <span class="modul-num new">Prasyarat</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Pengetahuan Umum Sebelum Memulai
+        </h2>
+      </div>
+      <p class="section-sub">
+        Baca bagian ini sebelum menjalankan command atau mengubah kode.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Apa yang sedang dibangun?</span>
+        <p>
+          Mini-CDSS adalah <strong>Clinical Decision Support System</strong>
+          edukasional. Sistem ini membantu pencarian kode WHO ICD-10 dan
+          pemeriksaan pasangan obat berdasarkan data lokal. Sistem ini bukan
+          dokter, bukan alat diagnosis mandiri, dan bukan pengganti pedoman
+          klinis atau validasi tenaga kesehatan.
+        </p>
+        <p>
+          Alur besarnya adalah:
+          <strong
+            >data sumber → preprocessing → vector index → retrieval → prompt
+            grounded → LLM → jawaban dengan sumber</strong
+          >. Setiap tahap memiliki tanggung jawab berbeda dan dapat diuji secara
+          terpisah.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Istilah yang wajib dipahami</span>
+        <table>
+          <tr>
+            <th>Istilah</th>
+            <th>Makna sederhana</th>
+            <th>Perannya di proyek</th>
+          </tr>
+          <tr>
+            <td>Dataset</td>
+            <td>Kumpulan data sumber yang menjadi rujukan sistem.</td>
+            <td>WHO ICD-10 2019 dan DDInter lokal.</td>
+          </tr>
+          <tr>
+            <td>ETL</td>
+            <td>
+              Extract, Transform, Load: membaca, membersihkan, dan menyimpan
+              data.
+            </td>
+            <td>Membuat CSV kanonik dan SQLite.</td>
+          </tr>
+          <tr>
+            <td>Embedding</td>
+            <td>Mengubah teks menjadi angka yang mewakili kemiripan makna.</td>
+            <td>Dipakai untuk semantic search.</td>
+          </tr>
+          <tr>
+            <td>Vector database</td>
+            <td>Database yang mencari vector paling dekat dengan query.</td>
+            <td>ChromaDB menyimpan index ICD-10 dan DDInter.</td>
+          </tr>
+          <tr>
+            <td>BM25</td>
+            <td>Pencarian berdasarkan kecocokan kata literal.</td>
+            <td>Membantu kode dan nama obat yang harus cocok persis.</td>
+          </tr>
+          <tr>
+            <td>RAG</td>
+            <td>
+              Retrieval-Augmented Generation: cari konteks dahulu, baru minta
+              LLM menjawab.
+            </td>
+            <td>Mengurangi jawaban yang tidak bersumber.</td>
+          </tr>
+          <tr>
+            <td>API</td>
+            <td>Kontrak komunikasi antaraplikasi melalui HTTP dan JSON.</td>
+            <td>FastAPI menjembatani frontend dengan core RAG.</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">Hal yang harus dipahami sebelum eksekusi</span>
+        <ol>
+          <li>
+            Python environment harus terisolasi dengan <code>.venv</code>.
+          </li>
+          <li>
+            API key adalah rahasia; simpan di <code>.env</code>, bukan di kode.
+          </li>
+          <li>Model embedding dan reranker dapat mengunduh ratusan MB.</li>
+          <li>
+            ChromaDB adalah hasil build; ia bukan pengganti dataset sumber.
+          </li>
+          <li>
+            Setiap perubahan data atau metadata membutuhkan rebuild index.
+          </li>
+          <li>
+            Hasil RAG harus dianggap bantuan pencarian, bukan keputusan klinis.
+          </li>
+          <li>
+            Testing harus dijalankan tanpa API key untuk logic deterministik.
+          </li>
+        </ol>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Peta command dari nol</span>
+        <pre><code># 1. Masuk ke folder proyek
+cd mini-cdss
+
+# 2. Buat dan aktifkan environment Windows PowerShell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 3. Install dependency dan tools pengembangan
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+
+# 4. Siapkan konfigurasi lokal
+Copy-Item .env.example .env
+
+# 5. Buat data processed dari folder sumber di luar mini-cdss
+python -m scripts.prepare_icd10
+python -m scripts.prepare_drug_interactions
+
+# 6. Opsional: bangun database relasional untuk inspeksi hierarki
+python scripts/etl_pipeline.py
+
+# 7. Bangun vector index
+python -m src.build_index
+
+# 8. Jalankan quality check
+pytest -q
+
+# 9. Jalankan API
+uvicorn api.main:app --reload --port 8000</code></pre>
+        <p>
+          Jika import berwarna merah di editor, pilih interpreter
+          <code>.venv\Scripts\python.exe</code> melalui
+          <code>Python: Select Interpreter</code>. Jika API gagal karena index
+          belum ada, ulangi langkah 5–7.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint prasyarat</span>
+        <p>
+          Kamu siap lanjut jika bisa menjelaskan perbedaan dataset, CSV
+          processed, SQLite, ChromaDB, BM25, RAG, API, dan LLM; serta tahu bahwa
+          <code>python -m src.build_index</code> harus dijalankan ulang setelah
+          struktur metadata berubah.
+        </p>
+      </div>
+    </section>
+
+    <nav class="toc">
+      <ol>
+        <li>
+          <a href="#pengetahuan-umum"
+            ><span class="num">Prasyarat</span> Pengetahuan Umum Sebelum
+            Memulai</a
+          >
+        </li>
+        <li>
+          <a href="#modul-0"
+            ><span class="num">Modul 0</span> Menyiapkan Laptop Kamu</a
+          >
+        </li>
+        <li>
+          <a href="#modul-1"
+            ><span class="num">Modul 1</span> LLM, API, dan Kenapa RAG
+            Dibutuhkan</a
+          >
+        </li>
+        <li>
+          <a href="#modul-2"
+            ><span class="num">Modul 2</span> Data: Fondasi dari Segalanya</a
+          >
+        </li>
+        <li>
+          <a href="#modul-3"
+            ><span class="num">Modul 3</span> Mengubah Teks Jadi Angka
+            (Embedding)</a
+          >
+        </li>
+        <li>
+          <a href="#modul-4"
+            ><span class="num">Modul 4</span> Mencari yang Relevan
+            (Retrieval)</a
+          >
+        </li>
+        <li>
+          <a href="#modul-5"
+            ><span class="num">Modul 5</span> Menyambung ke LLM dengan Aman</a
+          >
+        </li>
+        <li>
+          <a href="#modul-6"
+            ><span class="num">Modul 6</span> Mengukur: Apakah Ini Beneran
+            Bagus?</a
+          >
+        </li>
+        <li>
+          <a href="#modul-7"
+            ><span class="num">Modul 7</span> Menulis Kode yang Bisa
+            Dipercaya</a
+          >
+        </li>
+        <li>
+          <a href="#modul-8"
+            ><span class="num">Modul 8</span> Ringkasan: Dari CLI ke Arsitektur
+            Full-Stack</a
+          >
+        </li>
+        <li>
+          <a href="#modul-9"
+            ><span class="num new">Modul 9</span> Membangun FastAPI Backend<span
+              class="badge-new"
+              >BARU</span
+            ></a
+          >
+        </li>
+        <li>
+          <a href="#modul-10"
+            ><span class="num new">Modul 10</span> Membangun Next.js
+            Frontend<span class="badge-new">BARU</span></a
+          >
+        </li>
+        <li>
+          <a href="#modul-11"
+            ><span class="num new">Modul 11</span> CORS, Integrasi, &amp; Uji
+            End-to-End<span class="badge-new">BARU</span></a
+          >
+        </li>
+        <li>
+          <a href="#modul-12"
+            ><span class="num new">Modul 12</span> Peta Arsitektur &amp;
+            Direktori File<span class="badge-new">PENTING</span></a
+          >
+        </li>
+        <li>
+          <a href="#modul-13"
+            ><span class="num new">Modul 13</span> Filter Chapter &amp; Group
+            ICD-10<span class="badge-new">BARU</span></a
+          >
+        </li>
+      </ol>
+    </nav>
+
+    <!-- ============ MODUL 0 ============ -->
+    <section id="modul-0">
+      <div class="modul-head">
+        <span class="modul-num">Modul 0</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Menyiapkan Laptop Kamu
+        </h2>
+      </div>
+      <p class="section-sub">
+        Sebelum nulis 1 baris kode pun, environment-nya harus benar.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          Kamu pasti sudah pernah install library Python pakai
+          <code>pip install</code>. Masalahnya: kalau semua proyek Python di
+          laptopmu install library ke tempat yang SAMA (global), proyek A yang
+          butuh versi lama suatu library bisa bentrok dengan proyek B yang butuh
+          versi baru.
+        </p>
+        <p>
+          <strong>Virtual environment (venv)</strong> itu solusinya: kotak
+          terisolasi PER PROYEK. Proyek ini punya "kotak" library sendiri,
+          proyek lain punya kotaknya sendiri. Tidak akan saling ganggu.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <p>
+          Ekstrak <code>mini-cdss.zip</code>, buka terminal di folder itu, lalu:
+        </p>
+        <pre><code># Cek Python kamu minimal versi 3.11
+python --version
+
+# Bikin "kotak" venv bernama "venv"
+python -m venv .venv
+
+# Aktifkan kotaknya (WAJIB tiap buka terminal baru untuk kerja di proyek ini)
+source .venv/bin/activate        # Mac/Linux
+.\.venv\Scripts\Activate.ps1   # Windows PowerShell
+
+# Tanda sudah aktif: nama "(venv)" muncul di depan prompt terminal kamu</code></pre>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label"
+          >⚠ Sebelum install: cek dulu apakah laptopmu punya GPU NVIDIA</span
+        >
+        <p>
+          <code>sentence-transformers</code> (dipakai untuk embedding di Modul
+          3) butuh <code>torch</code>. Secara default, <code>pip</code> memasang
+          varian yang sudah termasuk dukungan GPU NVIDIA (CUDA) — ukurannya
+          <strong>beberapa GB</strong> (banyak paket <code>nvidia-*</code>)
+          karena bundel runtime CUDA-nya sendiri. Ini BENAR &amp; BERGUNA kalau
+          laptopmu memang punya GPU NVIDIA (bisa dicek lewat DirectX Diagnostic
+          Tool / <code>dxdiag</code> di Windows, cari tab Display — kalau ada
+          baris "NVIDIA GeForce ..." di situ, kamu punya). Kalau tidak punya,
+          ukuran itu terbuang percuma.
+        </p>
+        <p><strong>Pilih salah satu sesuai laptopmu:</strong></p>
+        <table>
+          <tr>
+            <th>Situasi</th>
+            <th>Perintah install</th>
+          </tr>
+          <tr>
+            <td><strong>Punya GPU NVIDIA</strong> &amp; mau dipakai</td>
+            <td>
+              <code>pip install -e ".[dev]"</code> (default, tidak perlu apa-apa
+              lagi)
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Tidak punya GPU</strong>, atau mau hemat disk</td>
+            <td>
+              <code
+                >pip install torch --index-url
+                https://download.pytorch.org/whl/cpu</code
+              >
+              dulu, baru <code>pip install -e ".[dev]"</code>
+            </td>
+          </tr>
+        </table>
+        <p>
+          Jujur soal manfaatnya di skala proyek ini SEKARANG (sekitar 10.633
+          kode WHO dan 130.422 pasangan DDInter pada CSV kanonik untuk
+          di-index): percepatan dari GPU tidak akan dramatis — bukan beda "1 jam
+          jadi 1 menit", lebih ke beberapa detik lebih cepat. Manfaatnya akan
+          lebih terasa kalau nanti dataset diperbesar (upgrade ke WHO ICD-10
+          penuh, misalnya) atau proyek berkembang ke fine-tuning model beneran
+          (lihat Modul 8). Tapi kalau disk-mu longgar dan GPU-nya sudah ada,
+          tidak ada ruginya dipakai dari sekarang.
+        </p>
+        <p>
+          Kode-nya sendiri <strong>tidak perlu diubah sama sekali</strong> untuk
+          pilihan manapun — <code>SentenceTransformer</code> di
+          <code>build_index.py</code> otomatis mendeteksi &amp; pakai GPU kalau
+          tersedia, otomatis fallback ke CPU kalau tidak.
+        </p>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">⚠ Dependency yang wajib ditambahkan manual</span>
+        <p>
+          Dependensi <code>rank-bm25</code>, <code>python-multipart</code>, dan
+          <code>sse-starlette</code> sudah terdaftar di
+          <code>pyproject.toml</code> dan <code>requirements.txt</code>. Tidak
+          perlu memasangnya manual. Jika environment sudah pernah dibuat sebelum
+          perubahan ini, ulangi instalasi:
+        </p>
+        <pre><code>pip install -e ".[dev]"</code></pre>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint (khusus kalau pilih jalur GPU)</span>
+        <pre><code>python -c "import torch; print('GPU terdeteksi:', torch.cuda.is_available())"</code></pre>
+        <p>
+          Harus muncul <code>True</code>. Kalau <code>False</code> padahal kamu
+          punya GPU NVIDIA, kemungkinan besar driver NVIDIA-nya perlu di-update
+          (unduh dari nvidia.com/drivers atau lewat aplikasi GeForce Experience)
+          — <code>torch</code> butuh driver yang cukup baru untuk versi CUDA
+          yang dia bundel.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Setelah pilih salah satu jalur install di atas, jalankan
+          <code
+            >python -c "import chromadb, pandas, fastapi, rank_bm25;
+            print('semua library ketemu')"</code
+          >. Kalau muncul tulisan itu tanpa error, environment kamu siap. Kalau
+          ada <code>ModuleNotFoundError</code>, cek lagi apakah venv-nya aktif
+          (harus ada "(venv)" di prompt) dan langkah <code>pip install</code> di
+          atas sukses.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 1 ============ -->
+    <section id="modul-1">
+      <div class="modul-head">
+        <span class="modul-num">Modul 1</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          LLM, API, dan Kenapa RAG Dibutuhkan
+        </h2>
+      </div>
+      <p class="section-sub">Konsep inti sebelum menyentuh kode sama sekali.</p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          <strong>LLM (Large Language Model)</strong> seperti Claude/Gemini/Groq
+          itu, secara sederhana, mesin yang sangat pandai menebak "kata apa yang
+          masuk akal berikutnya" berdasarkan miliaran teks yang pernah dilatih.
+          Dia TIDAK punya database fakta yang dia "lookup" — dia menghasilkan
+          jawaban dari pola, bukan dari mencari.
+        </p>
+        <p>
+          Konsekuensinya: kalau kamu tanya sesuatu yang sangat spesifik (misal
+          "kode ICD-10 untuk penyakit X"), LLM bisa dengan PERCAYA DIRI menjawab
+          kode yang SALAH atau bahkan tidak ada — ini disebut
+          <strong>hallucination</strong>. Berbahaya banget di domain kesehatan.
+        </p>
+        <p>
+          <strong>RAG (Retrieval-Augmented Generation)</strong> adalah
+          solusinya: sebelum LLM menjawab, kita CARI DULU informasi yang relevan
+          dari sumber terpercaya (database kita sendiri), lalu kasih itu ke LLM
+          sebagai "contekan" di prompt, dan perintahkan LLM untuk HANYA menjawab
+          berdasarkan contekan itu — bukan dari ingatannya sendiri. Itu inti
+          dari seluruh proyek ini.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <p>
+          Buka <code>src/rag.py</code>, cari variabel
+          <code>SYSTEM_PROMPT</code>. Baca baris "ATURAN WAJIB" di situ — itu
+          literal instruksi tertulis yang memaksa LLM untuk grounding (cuma
+          jawab dari konteks yang diberikan). Ini bukan teori, ini baris kode
+          yang benar-benar dikirim ke LLM tiap kali ada pertanyaan.
+        </p>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">Soal API key</span>
+        <p>
+          Untuk manggil LLM (Groq/Gemini/Claude), kamu butuh API key — semacam
+          password yang membuktikan panggilanmu sah dan dipakai untuk menghitung
+          biaya. <strong>JANGAN PERNAH</strong> taruh API key langsung di kode
+          atau upload ke GitHub — selalu lewat file <code>.env</code> (lihat
+          <code>.env.example</code>) yang sudah di-ignore git lewat
+          <code>.gitignore</code>.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Coba jelaskan ke diri sendiri (atau ke teman): kenapa cuma "nanya ke
+          LLM langsung" berbahaya untuk kasus kode ICD-10, dan apa yang RAG
+          lakukan supaya lebih aman? Kalau belum bisa jelasin tanpa buka
+          catatan, baca ulang bagian konsep di atas.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 2 ============ -->
+    <section id="modul-2">
+      <div class="modul-head">
+        <span class="modul-num">Modul 2</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Data: Fondasi dari Segalanya
+        </h2>
+      </div>
+      <p class="section-sub">
+        RAG secanggih apapun percuma kalau datanya jelek.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          Prinsip "garbage in, garbage out" berlaku keras di sini: RAG cuma bisa
+          menjawab benar kalau data yang di-retrieve memang benar. Makanya
+          sebelum menyentuh AI sama sekali, kita harus tahu PERSIS data kita
+          dari mana, dan seberapa bisa dipercaya.
+        </p>
+        <p>
+          Proyek ini menggunakan dua dataset kelas medis sungguhan (real-world
+          datasets) untuk memastikan keandalan CDSS kita:
+        </p>
+        <table>
+          <tr>
+            <th>Dataset</th>
+            <th>Sumber</th>
+            <th>Fungsi</th>
+          </tr>
+          <tr>
+            <td>ICD-10 WHO 2019</td>
+            <td>Metadata WHO lokal di <code>../icd102019enMeta</code></td>
+            <td>
+              Standardisasi diagnosis dari tiga file hierarki: chapters, groups,
+              dan codes. Pipeline memakai kode terminal (tipe <code>T</code>)
+              sebagai dokumen RAG, bukan ICD-10-CM Amerika.
+            </td>
+          </tr>
+          <tr>
+            <td>DDInter</td>
+            <td>CSV lokal di <code>../ddinter</code></td>
+            <td>
+              Memberikan pasangan obat dan level interaksi (<code>Major</code>,
+              <code>Moderate</code>, <code>Minor</code>). File yang tersedia
+              tidak memuat mekanisme, sehingga aplikasi tidak mengarang
+              mekanisme tambahan.
+            </td>
+          </tr>
+        </table>
+        <p>
+          Data diproses dalam dua keluaran. Script
+          <code>prepare_*.py</code> membuat CSV kanonik untuk index RAG. Script
+          <code>etl_pipeline.py</code> membuat <code>data/cdss.db</code> untuk
+          inspeksi relasional dan menjaga hubungan chapter-group-code; database
+          SQLite ini belum menjadi sumber langsung retrieval.
+        </p>
+      </div>
+
+      <div class="block konsep">
+        <span class="label"
+          >Peran & Korelasi Dataset dalam Alur Kerja Klinis</span
+        >
+        <p>
+          Mengapa kita butuh dua dataset yang berbeda (ICD-10 dan DDInter)?
+          Karena sistem CDSS ini dirancang untuk mendampingi alur kerja dokter
+          secara utuh:
+        </p>
+        <ol>
+          <li>
+            <strong>Fase Diagnosis (ICD-10):</strong> Bertujuan menjawab
+            <em>"Pasien ini sakit apa secara baku?"</em>. Tanpa ICD-10, dokter A
+            mungkin menulis "Sakit Gula" dan dokter B menulis "Kencing Manis".
+            Sistem tidak akan paham bahwa itu penyakit yang sama. Dengan ICD-10,
+            sistem memaksa penggunaan bahasa medis universal (misal kode
+            <code>E11</code>).
+          </li>
+          <li>
+            <strong>Fase Resep (DDInter):</strong> Setelah penyakit diketahui,
+            dokter memberikan obat. Di sinilah DDInter mengambil alur, guna
+            menjawab <em>"Apakah kombinasi obat yang diresepkan ini aman?"</em>.
+            Sistem ini menjadi <em>safety net</em> (jaring pengaman) untuk
+            menghindari pasien keracunan akibat interaksi dua obat yang saling
+            bertabrakan (Drug-Drug Interaction).
+          </li>
+        </ol>
+        <p>
+          Secara korelasional:
+          <strong>ICD-10 bertugas di ranah standarisasi diagnosis</strong>,
+          sementara
+          <strong
+            >DDInter bertugas di ranah validasi keselamatan pengobatan</strong
+          >. Chatbot berbasis RAG yang akan kita bangun akan berfungsi ganda
+          mengakses dua "otak" data ini sesuai konteks pertanyaan klinis dari
+          dokter.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <p>
+          <strong
+            >Langkah 0 — ETL (Extract, Transform, Load) ke Database.</strong
+          >
+          Dataset kita sudah ada secara lokal. Jalankan skrip pemrosesannya
+          untuk mengekstrak teks, membersihkan, dan menyimpannya ke dalam
+          database relasional SQLite (<code>data/cdss.db</code>):
+        </p>
+        <pre><code># Dari root folder mini-cdss
+  python -m scripts.prepare_icd10
+  python -m scripts.prepare_drug_interactions
+  python scripts/etl_pipeline.py</code></pre>
+        <p>
+          Buka <code>data/cdss.db</code> untuk memeriksa tabel relasional. Untuk
+          RAG, CSV hasil preprocessing tetap harus dibuat sebelum menjalankan
+          <code>python -m src.build_index</code>.
+        </p>
+        <p>
+          Jumlah baris kedua keluaran memang berbeda. CSV kanonik DDInter yang
+          dipakai untuk embedding berisi sekitar
+          <strong>130.422 pasangan</strong> setelah deduplikasi dan validasi
+          severity, sedangkan ETL SQLite memuat sekitar
+          <strong>222.383 baris sumber</strong> untuk inspeksi. CSV RAG ICD-10
+          berisi sekitar <strong>10.633 kode terminal</strong>, sedangkan tabel
+          SQLite memuat sekitar <strong>12.221 baris kode</strong>
+          dari file codes.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Buka database <code>cdss.db</code>. Cek tabel
+          <code>icd10_codes</code> dan coba cari kode
+          <code>A00.0</code> (Cholera). Lihat <code>group_id</code>-nya, lalu
+          telusuri ke tabel <code>icd10_groups</code> untuk melihat kelompok
+          penyakitnya. Bisakah Anda menjelaskan mengapa menyimpan data dalam
+          bentuk relasional bersusun (hirarki) lebih menguntungkan untuk sistem
+          klinis dibanding satu tabel datar?
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 3 ============ -->
+    <section id="modul-3">
+      <div class="modul-head">
+        <span class="modul-num">Modul 3</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Mengubah Teks Jadi Angka (Embedding)
+        </h2>
+      </div>
+      <p class="section-sub">
+        Komputer tidak bisa "mengerti" kata — dia cuma bisa hitung angka.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          Bayangkan tiap kalimat punya "koordinat GPS" di ruang makna — kalimat
+          yang MIRIP MAKNANYA (walau beda kata persis) posisinya BERDEKATAN di
+          ruang itu. <code>"radang usus"</code> dan
+          <code>"gastroenteritis"</code> akan berdekatan walau tidak ada 1 huruf
+          pun yang sama.
+        </p>
+        <p>
+          <strong>Embedding</strong> adalah proses mengubah teks jadi
+          "koordinat" itu — dalam praktiknya, sebuah list angka (vector) dengan
+          ratusan dimensi, dihasilkan oleh model AI khusus. Dua teks yang
+          embedding-nya berdekatan (diukur pakai <em>cosine similarity</em>)
+          dianggap mirip maknanya.
+        </p>
+        <p>
+          <strong>Vector database</strong> (kita pakai ChromaDB) adalah database
+          yang dioptimalkan untuk menyimpan jutaan koordinat ini dan mencari
+          dengan sangat cepat "koordinat mana yang paling dekat dengan koordinat
+          query saya".
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <p>
+          Baca docstring di <code>src/build_index.py</code>, lalu jalankan
+          (unduhan model embedding ~470MB, cuma sekali):
+        </p>
+        <pre><code>python -m src.build_index</code></pre>
+        <p>
+          Proses ini membuat embedding untuk CSV kanonik ICD-10 dan DDInter di
+          <code>data/processed/</code>, lalu menyimpannya ke
+          <code>data/chroma_db/</code>. SQLite tidak dibaca oleh indexer saat
+          ini.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Kalau kamu tanya "apa itu embedding" ke orang lain, bisa jawab tanpa
+          kata "vector" atau "dimensi" (pakai analogi GPS/koordinat makna di
+          atas)? Itu tanda kamu paham konsepnya, bukan cuma istilahnya.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 4 ============ -->
+    <section id="modul-4">
+      <div class="modul-head">
+        <span class="modul-num">Modul 4</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Mencari yang Relevan (Retrieval)
+        </h2>
+      </div>
+      <p class="section-sub">
+        Bagian paling teknis, tapi juga paling berpengaruh ke kualitas jawaban.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>Ada 2 cara dasar mencari dokumen relevan:</p>
+        <ul>
+          <li>
+            <strong>Semantic search</strong> (pakai embedding Modul 3) — bagus
+            untuk kemiripan MAKNA, tapi kadang kalah presisi untuk istilah/kode
+            yang harus PERSIS sama.
+          </li>
+          <li>
+            <strong>BM25 (lexical search)</strong> — cara klasik, cocokkan KATA
+            KUNCI literal (mirip cara kerja mesin pencari lama). Lebih tajam
+            untuk istilah eksak, tapi tidak paham sinonim/makna.
+          </li>
+        </ul>
+        <p>
+          <strong>Hybrid search</strong> = pakai KEDUANYA, lalu gabung hasilnya.
+          Cara gabungnya pakai <strong>Reciprocal Rank Fusion (RRF)</strong>:
+          bukan menjumlah skor mentah (skalanya beda jauh, tidak adil), tapi
+          lihat RANKING (posisi) tiap dokumen di masing-masing metode, lalu
+          dokumen yang rankingnya bagus di KEDUA metode otomatis naik ke atas.
+        </p>
+        <p>
+          Setelah itu, ada 1 tahap lagi: <strong>reranking</strong>.
+          Cross-encoder (model AI kedua, lebih lambat tapi lebih teliti) menilai
+          ULANG kandidat yang sudah disaring, karena dia bisa "melihat" query
+          dan dokumen SEKALIGUS (bukan cuma bandingkan 2 koordinat terpisah).
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <p>
+          Bagian ini bisa dicoba TANPA API key sama sekali karena murni logic,
+          tidak manggil LLM. Coba di Python interaktif:
+        </p>
+        <pre><code>python -c "
+from src.fusion import tokenize, reciprocal_rank_fusion
+print(tokenize('Kolera Tidak Spesifik!'))
+# lihat gimana RRF menggabungkan 2 ranking:
+print(reciprocal_rank_fusion([[2,0,1], [2,1,0]]))
+"</code></pre>
+        <p>
+          Lalu baca <code>src/retrieval.py</code> — ikuti method
+          <code>search_icd10()</code> dari atas ke bawah, itu urutan: hybrid
+          search → rerank → return top hasil.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Kalau semantic search SENDIRIAN sudah cukup bagus, kenapa masih perlu
+          BM25? Coba pikirkan 1 contoh query di mana keyword matching (BM25)
+          akan menang dibanding semantic search murni.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 5 ============ -->
+    <section id="modul-5">
+      <div class="modul-head">
+        <span class="modul-num">Modul 5</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Menyambung ke LLM dengan Aman
+        </h2>
+      </div>
+      <p class="section-sub">
+        Sekarang baru manggil LLM sungguhan — setelah semua fondasi di atas
+        siap.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          Kenapa proyek ini support 3 provider LLM (Groq, Gemini, Claude) bukan
+          cuma 1? Karena masing-masing punya trade-off beda:
+        </p>
+        <table>
+          <tr>
+            <th>Provider</th>
+            <th>Kelebihan</th>
+          </tr>
+          <tr>
+            <td>Groq</td>
+            <td>
+              Sangat cepat &amp; murah, cocok untuk query sederhana volume
+              tinggi
+            </td>
+          </tr>
+          <tr>
+            <td>Gemini</td>
+            <td>Konteks besar, rate limit gratis tinggi</td>
+          </tr>
+          <tr>
+            <td>Claude</td>
+            <td>
+              Kualitas reasoning tinggi untuk kasus kompleks, plus fitur khusus
+              (prompt caching, tool use)
+            </td>
+          </tr>
+        </table>
+        <p>
+          <strong>Routing</strong> adalah heuristik yang tersedia di
+          <code>src/router.py</code> untuk memilih provider/model berdasarkan
+          kompleksitas pertanyaan. Pada repository saat ini, heuristik tersebut
+          diuji sebagai modul terpisah; CLI dan API masih memakai
+          <code>settings.default_provider</code>. Menghubungkan routing otomatis
+          ke runtime adalah pengembangan lanjutan, bukan perilaku default.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <p>
+          Daftar API key gratis di
+          <a href="https://console.groq.com">console.groq.com</a>, isi ke file
+          <code>.env</code> (copy dari <code>.env.example</code> dulu). Lalu:
+        </p>
+        <pre><code>python -m src.cli
+&gt; kode ICD-10 untuk gastroenteritis infeksius pada anak</code></pre>
+        <p>
+          Perhatikan output di akhir:
+          <code>[model: ... | latency: ...ms | cost: $...]</code> — itu bukti
+          nyata dari Modul 5 (provider apa yang dipakai) DAN pratinjau Modul 6
+          (metrik yang akan kita ukur formal).
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Coba tanya sesuatu yang SENGAJA di luar dataset kita (mis. "kode
+          ICD-10 untuk patah tulang"). Apakah jawabannya jujur bilang "tidak
+          ditemukan", atau malah mengarang? Kalau jujur, itu bukti sistem
+          grounding-nya (Modul 1) bekerja.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 6 ============ -->
+    <section id="modul-6">
+      <div class="modul-head">
+        <span class="modul-num">Modul 6</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Mengukur: Apakah Ini Beneran Bagus?
+        </h2>
+      </div>
+      <p class="section-sub">
+        "Kelihatannya jalan waktu dicoba manual" bukan bukti yang cukup.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          Kalau kamu cuma coba 2-3 pertanyaan manual dan "kelihatannya benar",
+          itu TIDAK cukup untuk klaim sistemnya bagus — bisa saja kebetulan
+          pertanyaan yang kamu pilih itu memang mudah. Butuh
+          <strong>golden set</strong>: kumpulan pertanyaan dengan jawaban benar
+          yang SUDAH kamu ketahui &amp; verifikasi manual duluan (disebut
+          <em>ground truth</em>), baru kita bandingkan jawaban LLM terhadap itu
+          secara sistematis.
+        </p>
+        <p>4 metrik yang kita ukur:</p>
+        <ul>
+          <li><strong>Accuracy</strong> — seberapa sering jawabannya benar</li>
+          <li>
+            <strong>Hallucination rate</strong> — seberapa sering model
+            MENGARANG detail yang tidak ada di data (paling kritis untuk
+            kesehatan)
+          </li>
+          <li><strong>Latency</strong> — seberapa cepat</li>
+          <li><strong>Cost</strong> — berapa biaya per pertanyaan</li>
+        </ul>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <pre><code>python -m src.eval_runner --provider groq --model llama-3.1-8b-instant
+      python -m src.compare_results</code></pre>
+        <p>
+          Baca hasilnya di <code>data/eval/results/*.csv</code>. Lalu buka
+          <code>data/eval/golden_set.py</code> — perhatikan ada 2 "tier":
+          <code>golden_set_curated.py</code> (ditulis tangan) dan bagian
+          generated otomatis di file itu sendiri. Baca docstring-nya untuk paham
+          kenapa dipisah begitu.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Kalau accuracy 95% tapi hallucination rate JUGA tinggi, apa artinya?
+          (Petunjuk: model bisa saja sering benar KEBETULAN sambil tetap sering
+          mengarang di kasus lain — accuracy tinggi TIDAK otomatis berarti model
+          bisa dipercaya.)
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 7 ============ -->
+    <section id="modul-7">
+      <div class="modul-head">
+        <span class="modul-num">Modul 7</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Menulis Kode yang Bisa Dipercaya
+        </h2>
+      </div>
+      <p class="section-sub">
+        Bagian yang paling sering dilewatkan proyek portfolio — dan paling
+        menunjukkan kematangan.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>3 tool berbeda, 3 jenis masalah berbeda:</p>
+        <table>
+          <tr>
+            <th>Tool</th>
+            <th>Nyari masalah apa</th>
+          </tr>
+          <tr>
+            <td><code>ruff</code></td>
+            <td>
+              Gaya kode &amp; pola berisiko (linting) — mis. import tidak
+              kepakai, variabel loop salah di-capture
+            </td>
+          </tr>
+          <tr>
+            <td><code>mypy</code></td>
+            <td>
+              Tipe data yang tidak konsisten (type checking) — sebelum kode
+              dijalankan, bukan pas crash di production
+            </td>
+          </tr>
+          <tr>
+            <td><code>pytest</code></td>
+            <td>
+              Apakah LOGIC-nya benar (testing) — kamu tulis "harusnya begini",
+              kode dicek otomatis apakah sesuai
+            </td>
+          </tr>
+        </table>
+        <p>
+          Jalankan ketiga tool ini sebagai quality gate lokal. Catatan bug di
+          bawah adalah konteks historis dari proses pengembangan; jangan
+          menganggap semua bug tersebut masih ada di checkout saat ini.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik</span>
+        <pre><code>ruff check src/ scripts/ tests/
+mypy src/ scripts/ tests/ --ignore-missing-imports
+pytest -v</code></pre>
+        <p>
+          Baca minimal 2 file test di <code>tests/</code> (mulai dari
+          <code>test_fusion.py</code>, paling pendek) — perhatikan pola
+          <code>assert</code>: tiap test bilang "kalau input begini, output
+          HARUS begitu", persis.
+        </p>
+      </div>
+
+      <h3>Contoh masalah yang perlu dikenali</h3>
+      <p>
+        Bagian ini membantu membaca hasil lint dan type checking secara kritis.
+        Periksa kembali source saat ini sebelum menyimpulkan bahwa contoh
+        historis berikut masih berlaku.
+      </p>
+
+      <div class="bugcard">
+        <p class="bugnum">Contoh aturan ruff B023</p>
+        <h4>Closure lambda menangkap variabel loop</h4>
+        <p>
+          Ini adalah pola umum yang perlu dicari: <code>lambda</code> di dalam
+          loop dapat menangkap variabel secara reference, bukan nilai saat
+          iterasi dibuat. Jika ruff melaporkan B023, gunakan default argument
+          atau fungsi biasa untuk mengikat nilai dengan jelas.
+        </p>
+        <p>
+          Jangan menyimpulkan pipeline aman hanya karena satu output terlihat
+          benar; tambahkan regression test untuk perilaku yang diharapkan.
+        </p>
+      </div>
+
+      <div class="bugcard">
+        <p class="bugnum">Masalah import yang umum</p>
+        <h4><code>sys.path</code> dan working directory</h4>
+        <p>
+          Import dapat gagal jika command dijalankan dari folder yang salah atau
+          package belum di-install editable. Jalankan command dari root
+          <code>mini-cdss/</code> dan gunakan
+          <code>pip install -e ".[dev]"</code>.
+        </p>
+        <p>
+          Ini alasan command setup dan test perlu benar-benar dijalankan di
+          environment proyek, bukan hanya dibaca.
+        </p>
+      </div>
+
+      <div class="bugcard">
+        <p class="bugnum">Kompatibilitas SDK</p>
+        <h4>Parameter API berubah antarversi</h4>
+        <p>
+          SDK provider dapat mengubah signature dan parameter. Kode saat ini
+          sengaja tidak mengirim <code>temperature</code> ke Anthropic; jika
+          dependency di-upgrade, baca changelog dan jalankan type check serta
+          test adapter sebelum memakai provider tersebut.
+        </p>
+        <p>
+          Jangan menjadikan komentar lama sebagai bukti kompatibilitas; source,
+          versi dependency, dan test adalah sumber kebenaran.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Coba SENGAJA rusak sesuatu kecil (misal ubah 1 angka di
+          <code>src/router.py</code>) lalu jalankan <code>pytest</code> lagi.
+          Lihat sendiri test yang gagal dan pesan errornya — ini cara paling
+          cepat merasakan GUNANYA test, bukan cuma baca teori.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 8 ============ -->
+    <section id="modul-8">
+      <div class="modul-head">
+        <span class="modul-num">Modul 8</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Ringkasan: Dari CLI ke Arsitektur Full-Stack
+        </h2>
+      </div>
+      <p class="section-sub">
+        Sebelum lanjut ke API dan frontend, pastikan gambaran besarnya sudah
+        jelas.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Arsitektur yang akan kita bangun</span>
+        <p>
+          Sampai Modul 7, semua interaksi terjadi lewat CLI. Mulai Modul 9, kita
+          akan membungkusnya menjadi sistem 3 lapis yang bisa diakses dari
+          browser:
+        </p>
+        <table>
+          <tr>
+            <th>Lapisan</th>
+            <th>Teknologi</th>
+            <th>Tanggung jawab</th>
+          </tr>
+          <tr>
+            <td><strong>Backend (API)</strong></td>
+            <td>Python · FastAPI</td>
+            <td>
+              Menerima request HTTP, jalankan pipeline RAG, kembalikan JSON
+            </td>
+          </tr>
+          <tr>
+            <td><strong>AI Core</strong></td>
+            <td>Python · <code>src/</code></td>
+            <td>
+              Retrieval, reranking, LLM call — kode yang sudah ada, tidak perlu
+              diubah
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Frontend (UI)</strong></td>
+            <td>TypeScript · Next.js</td>
+            <td>
+              Tampilkan antarmuka chat, kirim request ke backend, render jawaban
+            </td>
+          </tr>
+        </table>
+        <p>
+          Yang penting dipahami:
+          <strong>core RAG di <code>src/</code> sudah tersedia</strong> sehingga
+          backend FastAPI dapat memakainya kembali. Endpoint memanggil fungsi
+          yang sudah ada (<code>answer_icd10_query</code>,
+          <code>answer_drug_interaction_query</code>) melalui
+          <code>answer_query()</code>; perubahan pada core tetap harus diuji
+          seperti biasa.
+        </p>
+      </div>
+
+      <div class="block konsep">
+        <span class="label">Kenapa FastAPI, bukan Flask atau Django?</span>
+        <p>Tiga alasan konkret untuk proyek AI seperti ini:</p>
+        <ul>
+          <li>
+            <strong>Async-native</strong> — FastAPI dibangun di atas ASGI,
+            artinya bisa menangani banyak request bersamaan tanpa satu LLM call
+            memblokir yang lain.
+          </li>
+          <li>
+            <strong>Pydantic built-in</strong> — Validasi request/response JSON
+            otomatis, sama persis dengan yang sudah dipakai di
+            <code>settings.py</code>.
+          </li>
+          <li>
+            <strong>Swagger UI otomatis</strong> — Dokumentasi interaktif
+            langsung tersedia di <code>/docs</code> tanpa menulis apapun —
+            berguna untuk debugging sebelum frontend jadi.
+          </li>
+        </ul>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">⚠ Satu hal kritis sebelum Modul 9</span>
+        <p>
+          Kode LLM client kita (<code>llm_clients.py</code>) adalah
+          <strong>synchronous</strong> — artinya saat LLM sedang berpikir (bisa
+          3–10 detik), Python thread itu tidak bisa melakukan hal lain. Di
+          FastAPI, ini berpotensi memblokir seluruh server. Solusinya akan
+          dijelaskan di Modul 9 — tapi penting kamu paham MASALAHNYA dulu
+          sebelum lihat solusinya.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint sebelum lanjut</span>
+        <p>
+          Pastikan semua modul sebelumnya sudah selesai: CLI bisa menjawab
+          pertanyaan, eval runner bisa jalan, dan <code>pytest</code> tidak ada
+          yang gagal. Modul 9 dan 10 membangun DI ATAS fondasi yang sudah ada —
+          kalau fondasinya goyah, bagian baru akan lebih sulit di-debug.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 9 ============ -->
+    <section id="modul-9">
+      <div class="modul-head">
+        <span class="modul-num new">Modul 9</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Membangun FastAPI Backend
+        </h2>
+      </div>
+      <p class="section-sub">
+        Membungkus pipeline RAG menjadi HTTP API yang bisa dipanggil dari mana
+        saja.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu: Lifespan dan Singleton</span>
+        <p>
+          Ingat waktu <code>cli.py</code> dijalankan, dia load model embedding +
+          ChromaDB + reranker duluan, baru baru bisa terima pertanyaan? Proses
+          itu makan waktu ~10–30 detik. Di API server, kita TIDAK bisa melakukan
+          itu setiap ada request — terlalu lambat.
+        </p>
+        <p>
+          Solusinya: <strong>lifespan</strong>. FastAPI punya mekanisme untuk
+          menjalankan kode SEKALI saat server start, menyimpan hasilnya di
+          <code>app.state</code>, lalu semua request bisa pakai objek yang sama
+          itu. Ini prinsip <strong>singleton</strong>: satu instance yang
+          di-share.
+        </p>
+        <p>
+          Untuk mengatasi masalah LLM sync (lihat Modul 8), kita pakai
+          <code>asyncio.to_thread()</code> — cara Python untuk menjalankan
+          fungsi synchronous di thread terpisah, supaya event loop FastAPI tetap
+          bebas melayani request lain selama LLM sedang berpikir.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 1: Kenali struktur folder API</span
+        >
+        <p>
+          Struktur ini sudah tersedia di repository. Dari PowerShell di root
+          proyek, periksa dengan:
+        </p>
+        <pre><code>Get-ChildItem api -Recurse</code></pre>
+        <p>Struktur backend yang ada:</p>
+        <pre><code>mini-cdss/
+├── api/
+│   ├── __init__.py
+│   ├── main.py          ← entry point FastAPI
+│   └── routes/
+│       ├── __init__.py
+│       └── query.py     ← endpoint POST /query
+├── src/                 ← tidak perlu diubah
+└── ...</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 2: Baca dan verifikasi
+          <code>api/main.py</code></span
+        >
+        <pre><code># api/main.py
+"""
+Entry point FastAPI.
+Jalankan dengan: uvicorn api.main:app --reload --port 8000
+"""
+from contextlib import asynccontextmanager
+
+import chromadb
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sentence_transformers import SentenceTransformer
+
+from src.llm_clients import get_client
+from src.retrieval import Retriever
+from src.settings import settings
+
+from api.routes import query
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Kode di dalam 'async with' ini dijalankan SEKALI saat server start.
+    Objek berat (embedder, ChromaDB, reranker, LLM client) di-load di sini
+    dan disimpan di app.state — di-share ke semua request, tidak di-load ulang.
+    """
+    if not settings.chroma_db_dir.exists():
+        raise RuntimeError(
+            f"Chroma index belum tersedia di {settings.chroma_db_dir}. "
+            "Jalankan 'python -m src.build_index' terlebih dahulu."
+        )
+    embedder = SentenceTransformer(settings.embedding_model)
+    chroma = chromadb.PersistentClient(path=str(settings.chroma_db_dir))
+
+    app.state.retriever = Retriever(chroma, embedder)
+    app.state.llm = get_client(settings.default_provider)
+    yield
+
+
+app = FastAPI(
+    title="Mini-CDSS API",
+    description="API untuk asisten klinis pencarian kode ICD-10 dan interaksi obat",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+
+# CORS dikonfigurasi di sini — wajib ada agar Next.js (port 3000)
+# bisa memanggil API ini (port 8000). Lihat penjelasan lengkap di Modul 11.
+app.add_middleware(
+    CORSMiddleware,
+  allow_origins=settings.allowed_origins,  # default: http://localhost:3000
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(query.router)
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "Mini-CDSS API is running"}
+</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 3: Baca dan verifikasi
+          <code>api/routes/query.py</code></span
+        >
+        <pre><code># api/routes/query.py
+import asyncio
+from typing import Literal
+
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, ConfigDict, Field
+
+from src.rag import RAGResult, answer_query
+
+router = APIRouter(prefix="/api/v1")
+
+
+class QueryRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+    query: str = Field(..., min_length=3, max_length=500)
+    mode: Literal["icd10", "drug", "auto"] = "auto"
+    chapter_id: str | None = Field(default=None, min_length=1, max_length=10)
+    group_id: str | None = Field(default=None, min_length=1, max_length=10)
+
+
+class QueryMetadata(BaseModel):
+    model: str
+    provider: str
+    latency_ms: float
+    cost_usd: float
+    input_tokens: int
+    output_tokens: int
+    retrieval_count: int
+
+
+class QueryResponse(BaseModel):
+    answer: str
+    sources: list[dict[str, object]]
+    metadata: QueryMetadata
+
+
+@router.post("/query", response_model=QueryResponse)
+async def handle_query(req: QueryRequest, request: Request):
+    """
+    Endpoint utama: terima pertanyaan klinis, kembalikan jawaban RAG.
+
+    Catatan asyncio.to_thread(): fungsi answer_*_query() di rag.py adalah
+    synchronous (LLM call blocking). Kita jalankan di thread pool terpisah
+    supaya event loop FastAPI tidak terblokir saat LLM sedang berpikir.
+    """
+    if req.mode == "drug" and (req.chapter_id or req.group_id):
+        raise HTTPException(
+            status_code=422,
+            detail="chapter_id dan group_id hanya berlaku untuk mode icd10",
+        )
+
+    retriever = request.app.state.retriever
+    llm = request.app.state.llm
+
+    try:
+        result: RAGResult = await asyncio.to_thread(
+            answer_query,
+            retriever,
+            llm,
+            req.query.strip(),
+            req.mode,
+            req.chapter_id,
+            req.group_id,
+        )
+    except Exception as exc:
+        # Log detail di server, tetapi jangan bocorkan detail internal ke client.
+        raise HTTPException(status_code=502, detail="Layanan RAG gagal memproses permintaan") from exc
+
+    return result.to_api_dict()
+</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 4: Verifikasi package dan jalankan server</span
+        >
+        <pre><code># api/__init__.py dan api/routes/__init__.py sudah ada.
+      # Jalankan server dari root folder proyek (BUKAN dari dalam api/ atau src/)
+uvicorn api.main:app --reload --port 8000</code></pre>
+        <p>Kalau berhasil, kamu akan lihat di terminal:</p>
+        <pre><code>INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Server starting — memuat model dan index...
+INFO:     Server siap. Provider LLM: groq</code></pre>
+        <p>
+          Buka
+          <a href="http://localhost:8000/docs">http://localhost:8000/docs</a> di
+          browser — Swagger UI akan muncul otomatis. Coba endpoint
+          <code>POST /api/v1/query</code> langsung dari sana tanpa perlu
+          frontend.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik — Langkah 5: Test dengan curl</span>
+        <pre><code># Test health check
+curl http://localhost:8000/health
+
+# Test query ICD-10
+curl -X POST http://localhost:8000/api/v1/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "kode ICD-10 untuk diare akut", "mode": "icd10"}'
+
+# Test query drug interaction
+curl -X POST http://localhost:8000/api/v1/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "interaksi warfarin dengan aspirin", "mode": "drug"}'</code></pre>
+        <p>
+          Response-nya harusnya JSON dengan field <code>answer</code>,
+          <code>sources</code>, <code>latency_ms</code>, dll. Kalau itu muncul,
+          backend sudah beres.
+        </p>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">⚠ Kalau server gagal start dengan ImportError</span>
+        <p>
+          Pastikan kamu menjalankan <code>uvicorn</code> dari ROOT folder proyek
+          (yang berisi <code>api/</code> dan <code>src/</code>), dan
+          <code>pip install -e .</code> sudah dijalankan supaya
+          <code>src/</code> bisa di-import dengan benar. Jangan jalankan dari
+          dalam folder <code>api/</code> atau <code>src/</code>.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Buka <code>http://localhost:8000/docs</code> dan kirim satu query
+          lewat Swagger UI. Apakah response JSON muncul dengan
+          <code>answer</code> yang masuk akal? Perhatikan juga field
+          <code>latency_ms</code> — ini yang nanti kamu bisa bandingkan antar
+          provider.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 10 ============ -->
+    <section id="modul-10">
+      <div class="modul-head">
+        <span class="modul-num new">Modul 10</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Membangun Next.js Frontend
+        </h2>
+      </div>
+      <p class="section-sub">Antarmuka chat yang memanggil backend FastAPI.</p>
+
+      <div class="block perhatian">
+        <span class="label">Status implementasi</span>
+        <p>
+          Modul ini adalah
+          <strong>panduan membangun frontend di kemudian hari</strong>. Folder
+          <code>frontend/</code> belum ada di repository. Backend yang tersedia
+          mengembalikan kontrak <code>{answer, sources, metadata}</code>, dan
+          contoh TypeScript di bawah mengikuti kontrak tersebut.
+        </p>
+      </div>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu: Kenapa Next.js?</span>
+        <p>
+          Next.js adalah framework React yang sudah include routing, server-side
+          rendering, dan tooling modern (TypeScript, ESLint, Tailwind). Untuk
+          proyek ini, kita pakai sebagai <strong>client-side app</strong> saja —
+          Next.js hanya menampilkan UI dan memanggil API FastAPI kita, tidak ada
+          logika AI di sini.
+        </p>
+        <p>
+          Pemisahan ini penting: frontend dan backend bisa di-deploy ke platform
+          berbeda (misal: Next.js ke Vercel, FastAPI ke Railway atau Render) dan
+          bisa dikembangkan secara independen.
+        </p>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">⚠ Prasyarat: Node.js</span>
+        <p>
+          Next.js butuh Node.js versi 18 atau lebih baru. Cek dengan
+          <code>node --version</code>. Kalau belum ada, download dari
+          <a href="https://nodejs.org">nodejs.org</a> (pilih versi LTS). Ini
+          terpisah dari Python — tidak perlu masuk venv untuk ini.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 1: Inisialisasi project Next.js</span
+        >
+        <p>Buat folder <code>frontend/</code> di dalam folder proyek kamu:</p>
+        <pre><code># Jalankan dari root folder proyek (mini-cdss/)
+npx create-next-app@latest frontend \
+  --typescript \
+  --tailwind \
+  --eslint \
+  --app \
+  --no-src-dir \
+  --import-alias "@/*"</code></pre>
+        <p>
+          Pilih <strong>Yes</strong> untuk semua opsi yang ditawarkan. Proses
+          ini mengunduh ~200MB dependency npm — cukup sekali.
+        </p>
+        <p>Struktur folder yang terbentuk di <code>frontend/</code>:</p>
+        <pre><code>frontend/
+├── app/
+│   ├── layout.tsx       ← layout global (font, metadata)
+│   └── page.tsx         ← halaman utama "/"
+├── public/
+├── package.json
+└── next.config.ts</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 2: Buat tipe data untuk response API</span
+        >
+        <p>Buat file <code>frontend/lib/types.ts</code>:</p>
+        <pre><code>// frontend/lib/types.ts
+// Tipe ini harus COCOK persis dengan QueryResponse di api/routes/query.py
+
+export interface QuerySource {
+  icd10_code?: string;
+  description?: string;
+  chapter_id?: string;
+  group_id?: string;
+  drug_a?: string;
+  drug_b?: string;
+  severity?: string;
+  mechanism?: string;
+}
+
+export interface QueryResponse {
+  answer: string;
+  sources: QuerySource[];
+  metadata: {
+    model: string;
+    provider: string;
+    latency_ms: number;
+    cost_usd: number;
+    input_tokens: number;
+    output_tokens: number;
+    retrieval_count: number;
+  };
+}
+
+export type QueryMode = "icd10" | "drug";
+</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Praktik — Langkah 3: Buat fungsi pemanggil API</span
+        >
+        <p>Buat file <code>frontend/lib/api.ts</code>:</p>
+        <pre><code>// frontend/lib/api.ts
+import { QueryMode, QueryResponse } from "./types";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
+export async function askQuery(
+  query: string,
+  mode: QueryMode,
+  filters?: { chapter_id?: string; group_id?: string }
+): Promise&lt;QueryResponse&gt; {
+  const res = await fetch(`${API_BASE}/api/v1/query`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, mode, ...filters }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() =&gt; ({}));
+    throw new Error(error.detail ?? `HTTP ${res.status}`);
+  }
+
+  return res.json() as Promise&lt;QueryResponse&gt;;
+}
+</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik — Langkah 4: Buat halaman chat utama</span>
+        <p>Ganti isi <code>frontend/app/page.tsx</code> dengan:</p>
+        <pre><code>// frontend/app/page.tsx
+"use client";
+
+import { useState } from "react";
+import { askQuery } from "@/lib/api";
+import { QueryMode, QueryResponse } from "@/lib/types";
+
+export default function Home() {
+  const [query, setQuery] = useState("");
+  const [mode, setMode] = useState&lt;QueryMode&gt;("icd10");
+  const [result, setResult] = useState&lt;QueryResponse | null&gt;(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState&lt;string | null&gt;(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!query.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const data = await askQuery(query, mode);
+      setResult(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    &lt;main className="min-h-screen bg-gray-50 p-8"&gt;
+      &lt;div className="max-w-2xl mx-auto"&gt;
+        &lt;h1 className="text-2xl font-bold text-gray-900 mb-2"&gt;
+          Mini-CDSS
+        &lt;/h1&gt;
+        &lt;p className="text-gray-500 text-sm mb-6"&gt;
+          Asisten pencarian ICD-10 &amp; interaksi obat berbasis RAG
+        &lt;/p&gt;
+
+        {/* Form query */}
+        &lt;form onSubmit={handleSubmit} className="space-y-3 mb-6"&gt;
+          &lt;div className="flex gap-2"&gt;
+            &lt;button
+              type="button"
+              onClick={() =&gt; setMode("icd10")}
+              className={`px-3 py-1 text-sm rounded border transition-colors ${
+                mode === "icd10"
+                  ? "bg-teal-700 text-white border-teal-700"
+                  : "bg-white text-gray-600 border-gray-300 hover:border-teal-500"
+              }`}
+            &gt;
+              ICD-10
+            &lt;/button&gt;
+            &lt;button
+              type="button"
+              onClick={() =&gt; setMode("drug")}
+              className={`px-3 py-1 text-sm rounded border transition-colors ${
+                mode === "drug"
+                  ? "bg-teal-700 text-white border-teal-700"
+                  : "bg-white text-gray-600 border-gray-300 hover:border-teal-500"
+              }`}
+            &gt;
+              Interaksi Obat
+            &lt;/button&gt;
+          &lt;/div&gt;
+
+          &lt;div className="flex gap-2"&gt;
+            &lt;input
+              type="text"
+              value={query}
+              onChange={(e) =&gt; setQuery(e.target.value)}
+              placeholder={
+                mode === "icd10"
+                  ? "Contoh: kode ICD-10 untuk gastroenteritis akut"
+                  : "Contoh: interaksi warfarin dengan ibuprofen"
+              }
+              className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-teal-500"
+            /&gt;
+            &lt;button
+              type="submit"
+              disabled={loading || !query.trim()}
+              className="px-4 py-2 bg-teal-700 text-white text-sm rounded hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            &gt;
+              {loading ? "Mencari..." : "Tanya"}
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+
+        {/* Error */}
+        {error &amp;&amp; (
+          &lt;div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm mb-4"&gt;
+            {error}
+          &lt;/div&gt;
+        )}
+
+        {/* Hasil */}
+        {result &amp;&amp; (
+          &lt;div className="bg-white border border-gray-200 rounded p-5 space-y-4"&gt;
+            {/* Jawaban */}
+            &lt;p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap"&gt;
+              {result.answer}
+            &lt;/p&gt;
+
+            {/* Metadata */}
+            &lt;div className="border-t border-gray-100 pt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 font-mono"&gt;
+              &lt;span&gt;model: {result.metadata.model}&lt;/span&gt;
+              &lt;span&gt;latency: {result.metadata.latency_ms.toFixed(0)}ms&lt;/span&gt;
+              &lt;span&gt;cost: ${result.metadata.cost_usd.toFixed(6)}&lt;/span&gt;
+              &lt;span&gt;dokumen: {result.metadata.retrieval_count}&lt;/span&gt;
+            &lt;/div&gt;
+
+            {/* Sumber */}
+            {result.sources.length &gt; 0 &amp;&amp; (
+              &lt;div&gt;
+                &lt;p className="text-xs text-gray-400 uppercase tracking-wide mb-2"&gt;
+                  Sumber dokumen
+                &lt;/p&gt;
+                &lt;ul className="space-y-1"&gt;
+                  {result.sources.map((src, i) =&gt; (
+                    &lt;li key={i} className="text-xs text-gray-500 bg-gray-50 rounded px-2 py-1"&gt;
+                      {src.icd10_code
+                        ? `${src.icd10_code}: ${src.description ?? ""}`
+                        : `${src.drug_a ?? "?"} ↔ ${src.drug_b ?? "?"} (${src.severity ?? "unknown"})`}
+                    &lt;/li&gt;
+                  ))}
+                &lt;/ul&gt;
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+    &lt;/main&gt;
+  );
+}
+</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik — Langkah 5: Jalankan frontend</span>
+        <pre><code># Masuk ke folder frontend dan jalankan dev server
+cd frontend
+npm run dev</code></pre>
+        <p>
+          Buka <a href="http://localhost:3000">http://localhost:3000</a> — kamu
+          akan lihat antarmuka chat sederhana. Pastikan backend FastAPI juga
+          sedang berjalan di terminal lain (port 8000).
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Ketik pertanyaan di UI, tekan "Tanya", dan tunggu hasilnya muncul.
+          Apakah jawaban dari backend tampil di browser? Perhatikan bagian
+          metadata di bawah jawaban — latency dan cost yang muncul di sini sama
+          persis dengan yang muncul di CLI sebelumnya, karena pipeline-nya
+          memang sama.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 11 ============ -->
+    <section id="modul-11">
+      <div class="modul-head">
+        <span class="modul-num new">Modul 11</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          CORS, Integrasi, &amp; Uji End-to-End
+        </h2>
+      </div>
+      <p class="section-sub">
+        Memastikan frontend dan backend bisa bicara satu sama lain — dan
+        membuktikannya.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu: Apa itu CORS?</span>
+        <p>
+          Browser punya aturan keamanan: JavaScript di halaman
+          <code>localhost:3000</code> (Next.js)
+          <strong>dilarang</strong> memanggil API di domain berbeda
+          (<code>localhost:8000</code>) kecuali server API itu SECARA EKSPLISIT
+          mengizinkan. Aturan ini disebut
+          <strong>CORS (Cross-Origin Resource Sharing)</strong>.
+        </p>
+        <p>
+          Tanpa konfigurasi CORS yang benar, browser akan memblokir semua
+          request dari Next.js ke FastAPI dengan error
+          <code>Access-Control-Allow-Origin</code> — walau keduanya jalan di
+          laptop yang sama. Kita sudah menambahkan middleware CORS di
+          <code>api/main.py</code> (Modul 9), tapi penting kamu paham KENAPA itu
+          diperlukan.
+        </p>
+        <table>
+          <tr>
+            <th>Situasi</th>
+            <th>Status CORS</th>
+            <th>Yang perlu dilakukan</th>
+          </tr>
+          <tr>
+            <td>Development lokal</td>
+            <td>Allow <code>localhost:3000</code></td>
+            <td>Sudah dikonfigurasi di <code>main.py</code></td>
+          </tr>
+          <tr>
+            <td>Deploy ke production</td>
+            <td>Allow domain asli</td>
+            <td>
+              Ganti <code>allow_origins</code> ke URL Next.js yang di-deploy
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="block konsep">
+        <span class="label">Environment variable untuk URL API</span>
+        <p>
+          Di <code>frontend/lib/api.ts</code>, kita pakai
+          <code>process.env.NEXT_PUBLIC_API_URL</code> untuk URL backend. Ini
+          penting: saat development, default ke <code>localhost:8000</code>,
+          tapi saat deploy ke production, bisa diganti tanpa ubah kode.
+        </p>
+        <p>
+          Buat file <code>frontend/.env.local</code> (sudah di-ignore oleh
+          <code>.gitignore</code> Next.js):
+        </p>
+        <pre><code># frontend/.env.local
+NEXT_PUBLIC_API_URL=http://localhost:8000</code></pre>
+        <p>
+          Saat deploy ke production (misal Vercel), isi variabel ini dengan URL
+          server FastAPI kamu di Render/Railway.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik — Uji integrasi end-to-end</span>
+        <p>Buka <strong>dua terminal</strong> secara bersamaan:</p>
+        <pre><code># Terminal 1 — Backend (dari root proyek)
+uvicorn api.main:app --reload --port 8000
+
+# Terminal 2 — Frontend (dari folder frontend/)
+npm run dev</code></pre>
+        <p>Lalu lakukan serangkaian uji manual ini:</p>
+        <ol>
+          <li>Buka <code>http://localhost:3000</code></li>
+          <li>
+            Pilih mode <strong>ICD-10</strong>, ketik "diare akut pada anak" →
+            pastikan jawaban muncul dengan kode ICD-10
+          </li>
+          <li>
+            Pilih mode <strong>Interaksi Obat</strong>, ketik "warfarin dan
+            aspirin" → pastikan jawaban menyebut kedua obat
+          </li>
+          <li>
+            Ketik pertanyaan yang jelas di luar cakupan dataset (mis. pertanyaan
+            dosis atau terapi). Periksa apakah model menolak dengan marker
+            "tidak ditemukan". Ini adalah uji grounding, bukan jaminan mutlak:
+            retrieval saat ini mengambil kandidat teratas meskipun query kurang
+            cocok, sehingga hasil tetap perlu dievaluasi.
+          </li>
+          <li>
+            Buka <strong>DevTools browser</strong> (F12) → tab Network → lihat
+            request ke <code>localhost:8000</code> → pastikan status 200, bukan
+            4xx/5xx
+          </li>
+        </ol>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Praktik — Debugging masalah umum</span>
+        <table>
+          <tr>
+            <th>Error yang muncul</th>
+            <th>Penyebab</th>
+            <th>Solusi</th>
+          </tr>
+          <tr>
+            <td><code>CORS policy: No 'Access-Control-Allow-Origin'</code></td>
+            <td>Backend tidak mengizinkan origin Next.js</td>
+            <td>
+              Cek <code>allow_origins</code> di <code>api/main.py</code>,
+              pastikan ada <code>http://localhost:3000</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>Failed to fetch</code> di browser</td>
+            <td>Backend tidak berjalan</td>
+            <td>
+              Pastikan <code>uvicorn</code> jalan di terminal lain, coba buka
+              <code>localhost:8000/health</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>ModuleNotFoundError: No module named 'src'</code></td>
+            <td>uvicorn dijalankan dari folder yang salah</td>
+            <td>
+              Jalankan dari <strong>root proyek</strong>, bukan dari dalam
+              <code>api/</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>500 Internal Server Error</code> dari backend</td>
+            <td>
+              Pipeline RAG gagal (biasanya API key atau index belum dibangun)
+            </td>
+            <td>
+              Cek log terminal uvicorn, pastikan <code>.env</code> sudah diisi
+              dan <code>build_index.py</code> sudah pernah dijalankan
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="block konsep">
+        <span class="label">Selanjutnya: Pengembangan lebih lanjut</span>
+        <p>
+          Dengan backend Modul 9 selesai, kamu punya fondasi API RAG. Setelah
+          frontend dibangun mengikuti Modul 10, barulah alur full-stack dapat
+          diuji seperti di Modul 11. Beberapa arah pengembangan selanjutnya:
+        </p>
+        <ul>
+          <li>
+            <strong>Histori percakapan</strong> — simpan riwayat query di
+            <code>localStorage</code> atau database sederhana seperti SQLite
+          </li>
+          <li>
+            <strong>Streaming response</strong> — pakai
+            <code>sse-starlette</code> di backend + <code>EventSource</code> di
+            frontend supaya jawaban muncul token-per-token (bukan nunggu selesai
+            dulu)
+          </li>
+          <li>
+            <strong>Deploy</strong> — FastAPI ke
+            <a href="https://render.com">Render</a> atau Railway (gratis untuk
+            proyek kecil), Next.js ke
+            <a href="https://vercel.com">Vercel</a> (gratis)
+          </li>
+          <li>
+            <strong>Upgrade data</strong> — gunakan versi WHO atau DDInter yang
+            lebih baru hanya setelah lisensi, provenance, dan golden set
+            diverifikasi ulang
+          </li>
+          <li>
+            <strong>Statistical rigor di eval</strong> — confidence interval,
+            bukan cuma angka titik tunggal
+          </li>
+        </ul>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint akhir</span>
+        <p>
+          Setelah frontend dibangun dan uji integrasi berhasil, kamu dapat
+          menjelaskan alur browser → FastAPI → pipeline RAG → UI. Sampai titik
+          itu, proyek ini tetap prototype edukasional dan bukan sistem klinis
+          production-grade.
+        </p>
+        <p>
+          Buka kembali <code>audit_report.md</code> yang sudah dibuat — itu
+          daftar hal yang perlu diperhatikan saat sistem ini dikembangkan lebih
+          jauh.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 12 ============ -->
+    <section id="modul-12">
+      <div class="modul-head">
+        <span
+          class="modul-num new"
+          style="color: var(--warn); border-color: var(--warn)"
+          >Modul 12</span
+        >
+        <h2 style="border: none; padding: 0; margin: 0">
+          Peta Arsitektur &amp; Direktori File
+        </h2>
+      </div>
+      <p class="section-sub">
+        Panduan referensi lengkap fungsi masing-masing file dalam proyek ini.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Kenapa perlu peta ini?</span>
+        <p>
+          Seringkali saat bekerja dengan proyek besar, kita tersesat dan bingung
+          di mana meletakkan suatu logika atau harus mengedit file apa. Bagian
+          ini merangkum <strong>setiap file</strong> yang ada di proyek
+          Mini-CDSS, apa tugas utamanya, dan bagaimana cara kerjanya secara
+          singkat.
+        </p>
+      </div>
+
+      <h3>Root Folder (Konfigurasi Proyek)</h3>
+      <table>
+        <tr>
+          <th>File</th>
+          <th>Fungsi / Penjelasan Inti</th>
+        </tr>
+        <tr>
+          <td><code>pyproject.toml</code></td>
+          <td>
+            <strong>Jantung konfigurasi modern Python.</strong> Mendefinisikan
+            metadata proyek (nama, versi), daftar dependensi (FastAPI, Chromadb,
+            dll), dan pengaturan <em>tools</em> (<code>ruff</code> untuk
+            linting, <code>mypy</code> untuk type checking, dan
+            <code>pytest</code>). Menggantikan fungsi lama
+            <code>setup.py</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>requirements.txt</code></td>
+          <td>
+            <strong
+              >Daftar dependensi yang dipatok versinya (pinned
+              dependencies).</strong
+            >
+            Fungsinya membantu instalasi reproducible, misalnya memastikan
+            <code>fastapi==0.141.1</code> digunakan. Daftar ini perlu diperbarui
+            sengaja jika versi dependency dinaikkan.
+          </td>
+        </tr>
+        <tr>
+          <td><code>.env.example</code></td>
+          <td>
+            <strong>Template variabel lingkungan.</strong> Di sinilah struktur
+            "rahasia" (API Keys: Groq, Gemini, Claude) didaftarkan. Pengembang
+            harus meng-copy file ini menjadi <code>.env</code> lokal yang tidak
+            diupload ke publik.
+          </td>
+        </tr>
+        <tr>
+          <td><code>.gitignore</code></td>
+          <td>
+            Daftar file atau folder yang <strong>dilarang</strong> diunggah ke
+            Git (seperti <code>venv/</code>, <code>__pycache__/</code>,
+            <code>.env</code>, folder database vektor Chroma, dll) untuk menjaga
+            keamanan dan kebersihan repo.
+          </td>
+        </tr>
+        <tr>
+          <td><code>audit_report.md</code></td>
+          <td>
+            Laporan audit sistem mandiri (rekomendasi dan tinjauan teknis per
+            September 2026; laporan historis) terkait kesiapan migrasi backend
+            dari CLI murni menuju arsitektur FastAPI.
+          </td>
+        </tr>
+        <tr>
+          <td><code>README.md</code> &amp; <code>PANDUAN.html</code></td>
+          <td>
+            Dokumentasi instruksional proyek. Panduan ini adalah kurikulum
+            langkah-demi-langkah (yang sedang Anda baca ini).
+          </td>
+        </tr>
+      </table>
+
+      <h3>Folder <code>api/</code> (Lapisan Backend FastAPI)</h3>
+      <table>
+        <tr>
+          <th>File</th>
+          <th>Fungsi / Penjelasan Inti</th>
+        </tr>
+        <tr>
+          <td><code>api/main.py</code></td>
+          <td>
+            <strong>Pintu masuk utama (entry point) aplikasi FastAPI.</strong>
+            Menjalankan konfigurasi <em>lifespan</em> (memuat objek berat ke RAM
+            seperti SentenceTransformer &amp; LLM Client hanya 1 kali saat
+            server nyala), mengatur middleware CORS, dan mendaftarkan
+            <em>router</em> RAG.
+          </td>
+        </tr>
+        <tr>
+          <td><code>api/routes/query.py</code></td>
+          <td>
+            <strong>Endpoint RAG.</strong> Menangani <em>request</em> rute POST
+            <code>/api/v1/query</code> dari frontend. Ini menjembatani format
+            web JSON dengan logika RAG di <code>src/rag.py</code>. Sangat
+            esensial karena menggunakan <code>asyncio.to_thread</code> agar LLM
+            tidak memblokir server.
+          </td>
+        </tr>
+      </table>
+
+      <h3>Folder <code>src/</code> (Lapisan Inti Logika AI &amp; RAG)</h3>
+      <table>
+        <tr>
+          <th>File</th>
+          <th>Fungsi / Penjelasan Inti</th>
+        </tr>
+        <tr>
+          <td><code>src/settings.py</code></td>
+          <td>
+            Pusat manajemen konfigurasi. Membaca <code>.env</code> dengan aman
+            dan mendefinisikan seluruh path/lokasi folder (seperti alamat
+            database dan file CSV) secara dinamis menggunakan modul
+            <code>pathlib</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/logging_config.py</code></td>
+          <td>
+            Mengatur format pencatatan log (<em>logging</em>) ke terminal agar
+            informatif dan seragam (menampilkan tanggal, nama modul, dan tingkat
+            urgensi INFO/WARNING/ERROR).
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/llm_clients.py</code></td>
+          <td>
+            <strong>Adapter Provider LLM.</strong> Mengandung kerangka dasar
+            <code>LLMClient</code> dan implementasi spesifik ke API asli
+            (<code>GroqClient</code>, <code>GeminiClient</code>,
+            <code>ClaudeClient</code>). Di sini seluruh variasi *provider*
+            diseragamkan input dan outputnya.
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/retry.py</code></td>
+          <td>
+            Logika <em>Circuit Breaker</em> (decorator
+            <code>@with_retry</code>). Bertugas mengulang panggilan API secara
+            otomatis jika terjadi limit sesaat (<em>rate limit/429</em>) dan
+            menangkap kegagalan koneksi sebelum aplikasi *crash*.
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/build_index.py</code></td>
+          <td>
+            Sistem <em>ingestion</em>. Skrip khusus pembaca data CSV yang
+            kemudian menjalankan model *embedding* untuk mengubah semua teksnya
+            ke bentuk angka, lalu menanamkannya (indexing) ke database vektor
+            ChromaDB.
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/retrieval.py</code></td>
+          <td>
+            <strong>Mesin Pencari Vektor.</strong> Kelas
+            <code>Retriever</code> yang bertugas mencari dan mengambil kumpulan
+            dokumen paling relevan (kandidat ICD-10 atau obat) secara semantik
+            berdasarkan makna query pengguna.
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/fusion.py</code></td>
+          <td>
+            Menerapkan <em>Reciprocal Rank Fusion</em> (RRF). Ini adalah otak
+            untuk logika hibrida, menggabungkan pencarian vektor (makna) dengan
+            pencarian kata kunci/BM25 (akurasi alfabet).
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/rag.py</code></td>
+          <td>
+            <strong>Sang Dirigen (Orchestrator).</strong> Menyatukan hasil
+            pencarian dokumen dari <code>retrieval.py</code> ke dalam satu
+            *prompt* terstruktur, lalu mengirimkannya ke
+            <code>llm_clients.py</code> dengan instruksi <em>Grounding</em> yang
+            ketat agar tidak berhalusinasi.
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/router.py</code></td>
+          <td>
+            Logika lawas CLI yang mendeteksi arah pertanyaan (ICD-10 vs Obat).
+            <em
+              >Saat ini fungsionalitasnya juga sudah dibalut ke
+              <code>answer_query()</code> di <code>rag.py</code> untuk konsumsi
+              FastAPI.</em
+            >
+          </td>
+        </tr>
+        <tr>
+          <td><code>src/cli.py</code></td>
+          <td>
+            Antarmuka berbasis terminal lawas yang digunakan untuk eksplorasi
+            dan percobaan lokal (Modul 1-8).
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>src/eval_runner.py</code> &amp;
+            <code>compare_results.py</code>
+          </td>
+          <td>
+            Skrip penguji otomatis yang membombardir LLM dengan puluhan soal
+            ujian (<em>Golden Set</em>) untuk mengukur tingkat akurasi nyata
+            (Modul 6).
+          </td>
+        </tr>
+      </table>
+
+      <h3>
+        Folder <code>scripts/</code> (Data Engineering &amp; Eksperimen
+        Tambahan)
+      </h3>
+      <table>
+        <tr>
+          <th>File</th>
+          <th>Fungsi / Penjelasan Inti</th>
+        </tr>
+        <tr>
+          <td>
+            <code>scripts/prepare_icd10.py</code> &amp;
+            <code>prepare_drug_interactions.py</code>
+          </td>
+          <td>
+            Skrip ETL (Extract, Transform, Load) awal yang menyeleksi dan
+            membersihkan file data mentah berantakan menjadi format CSV rapi di
+            <code>data/processed/</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>scripts/demo_*.py</code></td>
+          <td>
+            Skrip mini independen untuk menguji fitur terisolasi dari model
+            Anthropic (seperti penggunaan *tools* dan caching *prompt*).
+          </td>
+        </tr>
+      </table>
+
+      <h3>Folder <code>tests/</code> (Quality Assurance &amp; Unit Testing)</h3>
+      <table>
+        <tr>
+          <th>File</th>
+          <th>Fungsi / Penjelasan Inti</th>
+        </tr>
+        <tr>
+          <td><code>tests/test_*.py</code></td>
+          <td>
+            Serangkaian uji kelayakan kode (menggunakan framework
+            <code>pytest</code>). Memastikan logika seperti penggabungan RRF,
+            rute LLM, dan format kualitas CSV berjalan sempurna sesuai hukum
+            deterministik.
+          </td>
+        </tr>
+      </table>
+
+      <div class="block checkpoint">
+        <span class="label">💡 Tips Menggunakan Peta Ini</span>
+        <p>
+          Jika kamu menemui error di Terminal saat Next.js meminta jawaban RAG
+          (contoh: jawaban mengarang tidak beraturan), buka rute perbaikannya:
+          frontend (UI) → <code>api/routes/query.py</code> (Endpoint) →
+          <code>src/rag.py</code> (Prompt Inti) →
+          <code>src/llm_clients.py</code> (LLM Error). Gunakan struktur ini
+          untuk mengisolasi setiap bug!
+        </p>
+      </div>
+
+      <h3>Bagaimana Semua Bagian Terintegrasi?</h3>
+      <div class="block konsep">
+        <span class="label">Alur data saat persiapan</span>
+        <pre><code>../icd102019enMeta/*.txt ──┐
+                          ├─ scripts/prepare_icd10.py ──┐
+../ddinter/*.csv ────────┘                              │
+                                                        ├─ data/processed/*.csv
+                                                        ├─ scripts/etl_pipeline.py ── data/cdss.db
+                                                        └─ src/build_index.py ── data/chroma_db/
+
+data/processed/*.csv + embedding model
+        └─ ChromaDB collections:
+           icd10_codes, drug_interactions</code></pre>
+        <p>
+          File sumber tidak dibaca langsung oleh API saat query. Script
+          preprocessing mengubahnya menjadi format yang stabil. SQLite dipakai
+          untuk inspeksi relasional, sedangkan ChromaDB dipakai untuk retrieval.
+        </p>
+      </div>
+
+      <div class="block konsep">
+        <span class="label">Alur request saat runtime</span>
+        <pre><code>Browser / curl
+    │ POST /api/v1/query
+    ▼
+api/routes/query.py
+    │ validasi query, mode, chapter_id, group_id
+    ▼
+src/rag.py
+    │ memilih search_icd10() atau search_drug_interactions()
+    ▼
+src/retrieval.py
+    │ Chroma semantic search + BM25 + RRF + CrossEncoder reranking
+    ▼
+src/rag.py
+    │ menyusun KONTEKS dan SYSTEM_PROMPT
+    ▼
+src/llm_clients.py
+    │ Groq / Gemini / Claude melalui adapter yang sama
+    ▼
+api/routes/query.py
+    │ {answer, sources, metadata}
+    ▼
+Browser / client</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Kontrak antarbagian</span>
+        <table>
+          <tr>
+            <th>Dari</th>
+            <th>Ke</th>
+            <th>Yang dikirim</th>
+          </tr>
+          <tr>
+            <td><code>prepare_icd10.py</code></td>
+            <td><code>build_index.py</code></td>
+            <td>
+              CSV dengan <code>icd10_code</code>, <code>description</code>,
+              <code>chapter_id</code>, <code>group_id</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>build_index.py</code></td>
+            <td>ChromaDB</td>
+            <td>documents, embeddings, dan metadata</td>
+          </tr>
+          <tr>
+            <td><code>query.py</code></td>
+            <td><code>rag.py</code></td>
+            <td>query, mode, chapter/group filter</td>
+          </tr>
+          <tr>
+            <td><code>rag.py</code></td>
+            <td><code>retrieval.py</code></td>
+            <td>query dan filter kategori</td>
+          </tr>
+          <tr>
+            <td><code>retrieval.py</code></td>
+            <td><code>rag.py</code></td>
+            <td>dokumen relevan, metadata, dan skor reranking</td>
+          </tr>
+          <tr>
+            <td><code>rag.py</code></td>
+            <td><code>llm_clients.py</code></td>
+            <td>system prompt dan konteks retrieval</td>
+          </tr>
+          <tr>
+            <td><code>rag.py</code></td>
+            <td><code>query.py</code></td>
+            <td><code>RAGResult</code> yang diubah menjadi JSON</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">Urutan debugging yang benar</span>
+        <ol>
+          <li>
+            Jika data salah, periksa folder sumber dan
+            <code>scripts/prepare_*.py</code>.
+          </li>
+          <li>
+            Jika collection tidak ada, jalankan <code>src/build_index.py</code>.
+          </li>
+          <li>
+            Jika hasil pencarian salah, periksa <code>retrieval.py</code>, BM25,
+            metadata, dan filter.
+          </li>
+          <li>
+            Jika konteks benar tetapi jawaban salah, periksa
+            <code>rag.py</code> dan prompt.
+          </li>
+          <li>
+            Jika provider gagal, periksa <code>.env</code>,
+            <code>llm_clients.py</code>, dan retry.
+          </li>
+          <li>
+            Jika browser gagal memanggil backend, periksa CORS, URL API, dan
+            <code>query.py</code>.
+          </li>
+          <li>
+            Jika regresi muncul, tambahkan atau jalankan test sebelum mengubah
+            banyak file.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ MODUL 13 ============ -->
+    <section id="modul-13">
+      <div class="modul-head">
+        <span class="modul-num new">Modul 13</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Filter Chapter &amp; Group ICD-10
+        </h2>
+      </div>
+      <p class="section-sub">
+        Membatasi pencarian sebelum semantic search, BM25, dan reranking
+        berjalan.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Konsep dulu</span>
+        <p>
+          File <code>icd102019syst_chapters.txt</code> berisi bab besar, file
+          <code>icd102019syst_groups.txt</code> berisi kelompok penyakit, dan
+          <code>icd102019syst_codes.txt</code> berisi kode diagnosis. Setiap
+          kode terminal memiliki <code>chapter_id</code> dan
+          <code>group_id</code>.
+        </p>
+        <p>
+          Filter harus diterapkan <strong>sebelum</strong> hybrid retrieval.
+          Dengan begitu, dokumen dari kategori lain tidak ikut masuk ke BM25,
+          semantic search, reranker, atau prompt LLM. Ini lebih presisi daripada
+          mengambil hasil global lalu membuangnya setelah ranking.
+        </p>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">Prasyarat penting</span>
+        <p>
+          Perubahan metadata tidak otomatis mengubah index ChromaDB lama.
+          Setelah preprocessing selesai, <strong>wajib rebuild index</strong>.
+          Kalau tidak, API akan membaca collection lama yang belum memiliki
+          <code>chapter_id</code> dan <code>group_id</code>.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label"
+          >Langkah 1: Bangun ulang CSV dengan metadata hierarki</span
+        >
+        <pre><code># Jalankan dari root mini-cdss/
+python -m scripts.prepare_icd10
+
+# Pastikan kolom baru tersedia
+python -c "import pandas as pd; print(pd.read_csv('data/processed/icd10_subset.csv').columns.tolist())"</code></pre>
+        <p>
+          Output wajib memiliki kolom <code>icd10_code</code>,
+          <code>description</code>, <code>chapter_id</code>, dan
+          <code>group_id</code>. Contoh record: kode <code>A00.0</code> memiliki
+          chapter <code>01</code> dan group <code>A00</code>.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Langkah 2: Simpan metadata ke ChromaDB</span>
+        <p>
+          Di <code>src/build_index.py</code>, metadata setiap dokumen harus
+          menyertakan identifier hierarki:
+        </p>
+        <pre><code>metadatas=[
+    {
+        "icd10_code": row.icd10_code,
+        "description": row.description,
+        "chapter_id": row.chapter_id,
+        "group_id": row.group_id,
+    }
+    for row in df.itertuples()
+]</code></pre>
+        <p>Rebuild collection setelah perubahan:</p>
+        <pre><code>python -m src.build_index</code></pre>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Langkah 3: Terapkan filter di retrieval</span>
+        <p>
+          <code>Retriever.search_icd10()</code> menerima filter opsional. Jika
+          hanya <code>chapter_id</code> diberikan, pencarian dibatasi ke bab
+          itu. Jika chapter dan group diberikan sekaligus, keduanya harus cocok.
+        </p>
+        <pre><code>docs = retriever.search_icd10(
+    "pneumonia bakterial",
+    chapter_id="10",
+    group_id="J15",
+)</code></pre>
+        <p>
+          Filter semantic dikirim ke ChromaDB dengan <code>where</code>,
+          sedangkan BM25 memakai posisi dokumen yang sama sebagai allow-list.
+          Karena kedua ranking memakai kumpulan kandidat yang sama, RRF dan
+          reranking tetap konsisten.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Langkah 4: Gunakan filter melalui API</span>
+        <p>
+          Field filter bersifat opsional. Tanpa filter, perilaku API tetap
+          seperti sebelumnya. Dengan filter, mode yang sesuai adalah
+          <code>icd10</code> atau <code>auto</code>.
+        </p>
+        <pre><code>curl -X POST http://localhost:8000/api/v1/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "pneumonia bakterial",
+    "mode": "icd10",
+    "chapter_id": "10",
+    "group_id": "J15"
+  }'</code></pre>
+        <p>
+          Untuk mencari seluruh chapter tanpa membatasi group, hilangkan
+          <code>group_id</code>. Untuk pencarian lama tanpa filter, jangan kirim
+          kedua field tersebut atau isi dengan <code>null</code>.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Langkah 5: Siapkan frontend masa depan</span>
+        <p>
+          Frontend dapat mengambil daftar chapter dan group dari endpoint
+          metadata yang akan ditambahkan kemudian, atau dari file konfigurasi
+          yang dibangun saat deployment. Bentuk state minimalnya:
+        </p>
+        <pre><code>const [chapterId, setChapterId] = useState&lt;string | null&gt;(null);
+const [groupId, setGroupId] = useState&lt;string | null&gt;(null);
+
+await askQuery(query, "icd10", {
+  chapter_id: chapterId ?? undefined,
+  group_id: groupId ?? undefined,
+});</code></pre>
+        <p>
+          Dropdown group sebaiknya di-reset setiap chapter berubah, karena group
+          dari chapter sebelumnya tidak selalu valid pada chapter baru.
+        </p>
+      </div>
+
+      <div class="block praktik">
+        <span class="label">Langkah 6: Uji filter</span>
+        <pre><code># Rebuild data dan index terlebih dahulu
+python -m scripts.prepare_icd10
+python -m src.build_index
+
+# Jalankan unit test
+pytest -q tests/test_fusion.py tests/test_data_quality.py</code></pre>
+        <p>
+          Test yang tersedia memastikan metadata chapter/group tidak kosong,
+          tetapi belum merupakan integration test ChromaDB atau API. Untuk
+          verifikasi filter end-to-end, jalankan server dengan index yang sudah
+          dibangun, kirim request terfilter, lalu pastikan setiap item
+          <code>sources</code> memiliki metadata yang cocok. Test integration
+          otomatis untuk ChromaDB/API masih merupakan pekerjaan lanjutan.
+        </p>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint</span>
+        <p>
+          Kirim dua request dengan query yang sama: satu tanpa filter dan satu
+          dengan <code>chapter_id</code>/<code>group_id</code>. Periksa semua
+          item di <code>sources</code>. Setiap source pada request terfilter
+          wajib memiliki metadata yang cocok dengan filter. Jika tidak, index
+          belum dibangun ulang atau filter belum diteruskan sampai retrieval.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ PENUTUP ARSITEKTUR ============ -->
+    <section id="integrasi-proyek">
+      <div class="modul-head">
+        <span class="modul-num new">Penutup</span>
+        <h2 style="border: none; padding: 0; margin: 0">
+          Bagaimana Semua File Saling Terintegrasi
+        </h2>
+      </div>
+      <p class="section-sub">
+        Peta komunikasi lengkap setelah kamu selesai membaca semua modul.
+      </p>
+
+      <div class="block konsep">
+        <span class="label">Urutan data dari sumber sampai jawaban</span>
+        <pre><code>../icd102019enMeta/*.txt ──┐
+                            ├─ scripts/prepare_icd10.py ── data/processed/icd10_subset.csv
+../ddinter/*.csv ──────────┘
+                                  │
+                                  ├─ scripts/etl_pipeline.py ── data/cdss.db
+                                  │                              (inspeksi relasional)
+                                  │
+                                  └─ src/build_index.py ── data/chroma_db/
+                                                           (vector index)
+
+Browser / CLI
+     │
+     ├─ api/routes/query.py ── src/rag.py ── src/retrieval.py
+     │                              │              ├─ ChromaDB semantic search
+     │                              │              ├─ src/fusion.py / BM25 + RRF
+     │                              │              └─ CrossEncoder reranking
+     │                              └─ src/llm_clients.py ── Groq/Gemini/Claude
+     │
+     └──────────── JSON answer + sources + metadata ────────────┘</code></pre>
+        <p>
+          Panah ke kanan berarti output satu tahap menjadi input tahap
+          berikutnya.
+          <code>data/cdss.db</code> dipakai untuk inspeksi dan relasi data saat
+          ini; retrieval utama memakai CSV processed yang sudah di-index ke
+          ChromaDB.
+        </p>
+      </div>
+
+      <h3>Fungsi dan hubungan setiap kelompok file</h3>
+      <table>
+        <tr>
+          <th>Kelompok</th>
+          <th>File</th>
+          <th>Berkomunikasi dengan</th>
+          <th>Kegunaan</th>
+        </tr>
+        <tr>
+          <td>Sumber data</td>
+          <td><code>../icd102019enMeta</code>, <code>../ddinter</code></td>
+          <td>
+            <code>scripts/prepare_*.py</code>, <code>etl_pipeline.py</code>
+          </td>
+          <td>Rujukan asli yang tidak boleh digantikan oleh jawaban LLM.</td>
+        </tr>
+        <tr>
+          <td>Preprocessing</td>
+          <td>
+            <code>scripts/prepare_icd10.py</code>,
+            <code>prepare_drug_interactions.py</code>
+          </td>
+          <td>
+            <code>data/processed/*.csv</code>, <code>src/build_index.py</code>
+          </td>
+          <td>
+            Membersihkan format, menghapus pasangan duplikat, dan menyiapkan
+            teks index.
+          </td>
+        </tr>
+        <tr>
+          <td>Database relasional</td>
+          <td>
+            <code>scripts/etl_pipeline.py</code>, <code>data/cdss.db</code>
+          </td>
+          <td>Folder dataset, SQLite, dan pemeriksaan manual</td>
+          <td>
+            Menyimpan hubungan chapter → group → code serta tabel interaksi.
+          </td>
+        </tr>
+        <tr>
+          <td>Indexing</td>
+          <td><code>src/build_index.py</code></td>
+          <td>CSV processed, SentenceTransformer, ChromaDB</td>
+          <td>Mengubah dokumen menjadi embedding dan metadata pencarian.</td>
+        </tr>
+        <tr>
+          <td>Retrieval</td>
+          <td><code>src/retrieval.py</code>, <code>src/fusion.py</code></td>
+          <td>ChromaDB, BM25, CrossEncoder, <code>src/settings.py</code></td>
+          <td>
+            Mencari kandidat relevan, menerapkan filter, menggabungkan ranking,
+            lalu rerank.
+          </td>
+        </tr>
+        <tr>
+          <td>Orkestrasi RAG</td>
+          <td><code>src/rag.py</code></td>
+          <td>Retriever dan <code>src/llm_clients.py</code></td>
+          <td>
+            Menyusun konteks, system prompt grounding, jawaban, sources, dan
+            metadata.
+          </td>
+        </tr>
+        <tr>
+          <td>Provider LLM</td>
+          <td><code>src/llm_clients.py</code>, <code>src/retry.py</code></td>
+          <td>API key di <code>.env</code>, API Groq/Gemini/Claude</td>
+          <td>
+            Memanggil model eksternal, menghitung token/biaya, dan retry error
+            sementara.
+          </td>
+        </tr>
+        <tr>
+          <td>Antarmuka</td>
+          <td>
+            <code>src/cli.py</code>, <code>api/main.py</code>,
+            <code>api/routes/query.py</code>
+          </td>
+          <td><code>src/rag.py</code>, browser, frontend masa depan</td>
+          <td>
+            Menyediakan CLI dan endpoint HTTP yang memakai core RAG yang sama.
+          </td>
+        </tr>
+        <tr>
+          <td>Evaluasi</td>
+          <td>
+            <code>data/eval/*.py</code>, <code>src/eval_runner.py</code>,
+            <code>compare_results.py</code>
+          </td>
+          <td>CSV processed, RAG, output results</td>
+          <td>Menguji akurasi, refusal, hallucination, latency, dan biaya.</td>
+        </tr>
+        <tr>
+          <td>Quality assurance</td>
+          <td><code>tests/*.py</code></td>
+          <td>Settings, fusion, dataset, LLM adapter</td>
+          <td>
+            Menangkap regresi sebelum perubahan dipakai di API atau evaluasi.
+          </td>
+        </tr>
+      </table>
+
+      <div class="block praktik">
+        <span class="label">Contoh komunikasi request API</span>
+        <pre><code>POST /api/v1/query
+Content-Type: application/json
+
+{
+  "query": "pneumonia bakterial",
+  "mode": "icd10",
+  "chapter_id": "10",
+  "group_id": "J15"
+}
+
+// api/routes/query.py memvalidasi JSON
+// src/rag.py menerima query dan filter
+// src/retrieval.py hanya memilih dokumen chapter/group yang cocok
+// src/llm_clients.py menghasilkan jawaban dari konteks tersebut
+
+{
+  "answer": "...",
+  "sources": [
+    {"icd10_code": "J15.0", "chapter_id": "10", "group_id": "J15"}
+  ],
+  "metadata": {
+    "provider": "groq",
+    "retrieval_count": 1
+  }
+}</code></pre>
+      </div>
+
+      <div class="block perhatian">
+        <span class="label">Cara melacak masalah</span>
+        <table>
+          <tr>
+            <th>Gejala</th>
+            <th>Mulai cek dari</th>
+            <th>Alasan</th>
+          </tr>
+          <tr>
+            <td>Import merah di editor</td>
+            <td>Interpreter `.venv`, install `.[dev]`</td>
+            <td>Dependency belum dikenali editor.</td>
+          </tr>
+          <tr>
+            <td>Index tidak ditemukan</td>
+            <td><code>src/build_index.py</code></td>
+            <td>ChromaDB belum dibangun dari CSV processed.</td>
+          </tr>
+          <tr>
+            <td>Hasil tidak relevan</td>
+            <td><code>retrieval.py</code> dan <code>fusion.py</code></td>
+            <td>Masalah kandidat, filter, BM25, atau reranking.</td>
+          </tr>
+          <tr>
+            <td>Jawaban mengarang</td>
+            <td><code>rag.py</code>, sources, golden set</td>
+            <td>Periksa grounding dan kualitas retrieval.</td>
+          </tr>
+          <tr>
+            <td>HTTP 502</td>
+            <td>log <code>api/routes/query.py</code> dan provider</td>
+            <td>Pipeline atau API LLM gagal.</td>
+          </tr>
+          <tr>
+            <td>CORS error</td>
+            <td><code>.env</code> → <code>CORS_ORIGINS</code></td>
+            <td>Origin frontend belum diizinkan.</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="block checkpoint">
+        <span class="label">✓ Checkpoint integrasi</span>
+        <p>
+          Kamu dianggap memahami arsitektur jika dapat menjawab: file mana yang
+          membaca dataset, kapan CSV dibuat, kapan ChromaDB dibuat, siapa yang
+          menjalankan retrieval, siapa yang membangun prompt, bagaimana API
+          memanggil RAG, dan mengapa LLM tidak boleh menjadi sumber fakta utama.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      Kurikulum ini dipasangkan langsung dengan kode di
+      <code>mini-cdss/</code> — tiap modul merujuk file asli, bukan contoh
+      terpisah. Modul 9–11 ditambahkan Oktober 2026 sebagai panduan migrasi CLI
+      → FastAPI + Next.js, termasuk filter hierarki ICD-10.
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/chroma_db/
+.DS_Store
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data mentah berukuran besar -- tidak di-commit ke git (bikin repo berat).
+# Cara regenerate: lihat instruksi di README bagian "Cara menjalankan".
+data/raw/icd10_full.csv
+
+# Local databases and generated artifacts
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+*.log
+.DS_Store
+Thumbs.db
